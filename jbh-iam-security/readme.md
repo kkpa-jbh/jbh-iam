@@ -30,3 +30,4 @@ database lookups.
 When the access token expires, the client sends a request to a token refresh endpoint with the refresh token. The server
 validates the refresh token. If the refresh token is valid, the server issues a new access token and, optionally, a new
 refresh token.
+

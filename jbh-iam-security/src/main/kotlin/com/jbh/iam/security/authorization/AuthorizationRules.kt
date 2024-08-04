@@ -13,6 +13,11 @@ class AuthorizationRules :
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthorizationRules::class.java)
+        val AUTH_API_WHITELIST = arrayOf(
+            "/jbh/auth/signin",
+            "/jbh/auth/signup",
+            "/auth/**"
+        )
     }
 
     private val AUTH_WHITELIST = arrayOf(
@@ -32,6 +37,7 @@ class AuthorizationRules :
         "/images/**",
         "/webjars/**"
     )
+
 
     override fun customize(registry: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
         log.info("Registering JBH authorization rules")

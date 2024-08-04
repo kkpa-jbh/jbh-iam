@@ -117,7 +117,8 @@ class SecurityConfig() {
      * Configures the security filter chain for the application.
      *
      * This method sets up the main security configuration, including:
-     * - Disabling CSRF protection
+     * CSRF (Cross-Site Request Forgery) protection
+     * This is fine for a stateless API. CSRF protection is primarily needed for session-based authentication where cookies are used to maintain state. In a stateless JWT-based system, the token itself provides protection against CSRF attacks.
      * - Applying custom authorization rules
      * - Adding a JWT authentication filter
      * - Configuring stateless session management
