@@ -10,7 +10,6 @@ import com.jbh.iam.api.services.CrudService
 import com.jbh.iam.core.model.UserCore
 import com.jbh.iam.core.model.UserGroupCore
 import com.jbh.iam.core.model.UserRole
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -21,11 +20,6 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val userGroupRepository: UserGroupRepository
 ) : CrudService<UserDTO>(), UserService {
-
-
-    companion object {
-        val log = LoggerFactory.getLogger(UserServiceImpl::class.java)
-    }
 
     override fun validateSaveOperation(dto: UserDTO) {
         if (!isNewAndUnique(dto)) {

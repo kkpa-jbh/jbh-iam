@@ -25,7 +25,7 @@ class JwtTokenProvider {
     var logger = LoggerFactory.getLogger(JwtTokenProvider::class.java)
 
     fun generateToken(authentication: Authentication): String {
-        logger.info("Generating JWT Token...")
+        logger.info("Generating JWT Token... Expiration in ${jwtExpirationInMs} ms Secret is ${jwtSecret}")
         val userPrincipal: UserPrincipal = authentication.getPrincipal() as UserPrincipal
 
         val now = Instant.now()

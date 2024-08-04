@@ -37,5 +37,10 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
         return jwt // Change to an object with the result
     }
 
+    override fun logout() {
+        log.debug("Clering the security context")
+        SecurityContextHolder.clearContext()
+    }
+
 
 }
