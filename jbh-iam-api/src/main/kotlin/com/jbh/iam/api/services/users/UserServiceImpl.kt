@@ -93,7 +93,9 @@ class UserServiceImpl(
     override fun findById(id: UUID): UserDTO? {
         val user = userRepository.findById(id).orElse(null)
 
-        user?.let { it.toDTO() }
+        user?.let {
+            return it.toDTO()
+        }
 
         return null
     }

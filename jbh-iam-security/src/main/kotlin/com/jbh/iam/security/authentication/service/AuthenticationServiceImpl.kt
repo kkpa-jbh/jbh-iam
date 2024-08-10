@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import java.util.*
 
 @Configuration
 class AuthenticationServiceImpl : AuthenticationOperationService {
@@ -40,6 +41,10 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
     override fun logout() {
         log.debug("Clering the security context")
         SecurityContextHolder.clearContext()
+    }
+
+    override fun getUserIdFromJWT(token: String): UUID? {
+        return tokenProvider.getUserIdFromJWT(token)
     }
 
 

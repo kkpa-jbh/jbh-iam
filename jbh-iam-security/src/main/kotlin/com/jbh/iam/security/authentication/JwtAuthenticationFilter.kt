@@ -1,13 +1,11 @@
 package com.jbh.iam.security.authentication
 
-import com.jbh.iam.common.config.JBHConstants.JBH_TOKEN_COOKIE_NAME
 import com.jbh.iam.common.extensions.withMetadata
 import com.jbh.iam.security.service.CustomUserDetailsService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -47,8 +45,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         // Exclude static resources and public endpoints
         if (!isPublicEndpoint(request.requestURI) && !isStaticResource(request.requestURI)) {
             try {
-                logger.info("Getting JWT from cookie")
-                getJwtFromCookie(request)?.let {
+                tokenProvider.findJWTFromRequest(request)?.let {
                     logger.info("JWT from cookie: $it")
                     authenticateUserByJwt(request, it)
                 }
@@ -87,22 +84,4 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         return false
     }
 
-    @Deprecated("Use getJwtFromCookie instead")
-    private fun getJwtFromRequest(request: HttpServletRequest): String {
-        logger.info("Getting JWT from request")
-        val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
-        if (bearerToken == null) {
-            logger.error("Authorization header is missing in the request for URI: ${request.requestURI}")
-            throw IllegalArgumentException("Request not valid")
-        }
-        bearerToken.startsWith("Bearer ").let {
-            return bearerToken.substring(7, bearerToken.length)
-        }
-    }
-
-    private fun getJwtFromCookie(request: HttpServletRequest): String? {
-        logger.info("Getting JWT from cookie")
-        val cookies = request.cookies
-        return cookies?.find { it.name == JBH_TOKEN_COOKIE_NAME }?.value
-    }
 }

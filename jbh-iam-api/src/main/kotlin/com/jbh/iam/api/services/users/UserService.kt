@@ -16,4 +16,6 @@ interface UserService {
     fun findByNickNameOrEmail(nickName: String, email: String): UserCore?
 
     fun findByUserOwnerId(id: UUID): UserGroupCore?
+
+    fun findById(id: UUID): UserDTO?
 }

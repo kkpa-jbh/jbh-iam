@@ -1,9 +1,12 @@
 package com.jbh.iam.security.authentication
 
+import com.jbh.iam.common.config.JBHConstants
 import com.jbh.iam.core.security.UserPrincipal
 import io.jsonwebtoken.*
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import java.time.Instant
@@ -67,5 +70,33 @@ class JwtTokenProvider {
         }
 
         return false
+    }
+
+    fun findJWTFromRequest(request: HttpServletRequest): String? {
+        logger.info("Getting JWT from request")
+
+        var jwt = getJwtFromRequest(request)
+        if (jwt.isBlank()) {
+            jwt = getJwtFromCookie(request) ?: return null
+        }
+        return jwt
+    }
+
+    private fun getJwtFromCookie(request: HttpServletRequest): String? {
+        logger.info("Getting JWT from cookie")
+        val cookies = request.cookies
+        return cookies?.find { it.name == JBHConstants.JBH_TOKEN_COOKIE_NAME }?.value
+    }
+
+    private fun getJwtFromRequest(request: HttpServletRequest): String {
+        logger.info("Getting JWT from request")
+        val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+        if (bearerToken == null) {
+            logger.error("Authorization header is missing in the request for URI: ${request.requestURI}")
+            throw IllegalArgumentException("Request not valid")
+        }
+        bearerToken.startsWith("Bearer ").let {
+            return bearerToken.substring(7, bearerToken.length)
+        }
     }
 }

@@ -18,6 +18,6 @@ class Routes {
         const val AUTH_PATH = "/auth"
 
         // Shopping
-        const val SHOPPING_PATH = "/shopping"
+        const val USER_INFO_PATH = "/userinfo"
     }
 }
