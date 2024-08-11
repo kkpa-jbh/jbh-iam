@@ -3,7 +3,7 @@ package com.jbh.iam.api
 class Routes {
 
     companion object {
-        const val ROOT_PATH = "/"
+        const val IAM_BASE_PATH = "/iam-api"
 
         // Accounts
         const val ACCOUNT_PATH = "/accounts"

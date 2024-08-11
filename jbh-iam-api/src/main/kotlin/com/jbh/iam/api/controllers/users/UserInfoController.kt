@@ -18,7 +18,7 @@ class UserInfoController(
     private val userService: UserService
 ) {
 
-    @GetMapping("/")
+    @GetMapping("")
     fun getUserInfo(@RequestHeader("Authorization") authHeader: String): ResponseEntity<UserDTO> {
         val token = authHeader.substringAfter("Bearer ")
         val userId = authenticationSrv.getUserIdFromJWT(token)

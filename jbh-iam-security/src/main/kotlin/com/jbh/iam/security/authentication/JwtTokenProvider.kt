@@ -79,6 +79,9 @@ class JwtTokenProvider {
         if (jwt.isBlank()) {
             jwt = getJwtFromCookie(request) ?: return null
         }
+        if (jwt.isBlank()) {
+            throw IllegalArgumentException("JWT not found")
+        }
         return jwt
     }
 
@@ -93,7 +96,6 @@ class JwtTokenProvider {
         val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
         if (bearerToken == null) {
             logger.error("Authorization header is missing in the request for URI: ${request.requestURI}")
-            throw IllegalArgumentException("Request not valid")
         }
         bearerToken.startsWith("Bearer ").let {
             return bearerToken.substring(7, bearerToken.length)

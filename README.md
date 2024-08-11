@@ -1,1 +1,33 @@
 # jbh-iam
+
+Multiple monolithic applications as "microservices":
+What you're describing is actually a well-known architectural pattern called the "Modular Monolith" or sometimes "
+Distributed Monolith". It's a valid and often beneficial intermediate step between a pure monolith and full
+microservices architecture. This approach:
+
+Allows for easier separation of concerns
+Enables different tech stacks for different parts of your system
+Facilitates gradual migration to microservices if needed in the future
+Maintains some benefits of monolithic architecture (simpler deployment, data consistency) while gaining some benefits of
+microservices (modularity, technology diversity)
+
+## Suggestions
+
+Suggestions:
+a. Consistent Naming: Stick to a consistent naming convention across all your applications. Your proposed structure (
+/jbh-{module}/{module}-api/) is good.
+b. API Gateway: Implement an API Gateway as you've mentioned. This will handle routing, can provide a single entry point
+for authentication, and can help with cross-cutting concerns like rate limiting.
+c. Shared Libraries: For code that's common across your monoliths, consider creating shared libraries.
+d. Database Strategy: Carefully consider your database strategy. Shared databases can simplify data consistency but may
+limit independence. Separate databases offer more independence but require careful management of data consistency.
+e. Service Communication: Define clear interfaces for inter-service communication. Consider using REST or gRPC for
+synchronous communication, and message queues for asynchronous communication.
+f. Authentication/Authorization: Implement a centralized auth service (your IAM could serve this purpose) that other
+services can use.
+g. Monitoring and Logging: Implement centralized logging and monitoring from the start. It becomes crucial as you add
+more services.
+h. Documentation: Maintain clear API documentation for each service. Consider using tools like Swagger/OpenAPI.
+i. Containerization: Consider containerizing your applications (e.g., using Docker) to ensure consistency across
+environments and to prepare for potential future scaling.
+j. Feature Flags: Implement feature flags to enable/disable features across your distributed system easily.

@@ -1,5 +1,8 @@
 # Security
 
+- Redirect to login page if not logged in
+- Do not authenticate if not logged in
+- Base path for all APIs
 - Implement Refresh Tokens
 - Implement Rate Limiting
 - Implement Spring Security Headers
