@@ -81,13 +81,13 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     }
 
     private fun isPublicPage(uri: String): Boolean {
-        return AuthorizationRules.AUTH_VIEW_WHITELIST.any { uri.startsWith(it) }
+        val uriWithoutContextPath = uri.replaceFirst("/jbh", "");
+        return AuthorizationRules.AUTH_VIEW_WHITELIST.any { uriWithoutContextPath.startsWith(it.replace("/**", "")) }
     }
 
     private fun isStaticResource(uri: String): Boolean {
         var result = withMetadata("url" to uri) {
-            val staticPaths = listOf("/js/", "/css/", "/images/", "/webjars/")
-            return@withMetadata staticPaths.any { uri.contains(it) }
+            return@withMetadata AuthorizationRules.STATIC_RESOURCES.any { uri.contains(it.replace("/**", "")) }
         }
         return result
     }

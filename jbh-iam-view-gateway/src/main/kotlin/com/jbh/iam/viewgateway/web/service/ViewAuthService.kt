@@ -11,12 +11,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 
 @Service
-class AuthService(private val restTemplate: RestTemplate) {
+class ViewAuthService(private val restTemplate: RestTemplate) {
 
     private val AUTH_API_PATH = "/iam-api/auth";
 
     companion object {
-        private val log = LoggerFactory.getLogger(AuthService::class.java)
+        private val log = LoggerFactory.getLogger(ViewAuthService::class.java)
     }
 
     fun loginUser(loginRequest: LoginRequest): Pair<String, String> {

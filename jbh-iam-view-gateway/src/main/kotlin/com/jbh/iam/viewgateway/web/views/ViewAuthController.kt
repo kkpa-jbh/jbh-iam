@@ -2,7 +2,7 @@ package com.jbh.iam.viewgateway.web.views
 
 import com.jbh.iam.common.payload.LoginRequest
 import com.jbh.iam.common.payload.SignUpRequest
-import com.jbh.iam.viewgateway.web.service.AuthService
+import com.jbh.iam.viewgateway.web.service.ViewAuthService
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/view/auth")
-class AuthViewController(private val authService: AuthService) {
+class ViewAuthController(private val viewAuthService: ViewAuthService) {
 
-    private val log = LoggerFactory.getLogger(AuthViewController::class.java)
+    private val log = LoggerFactory.getLogger(ViewAuthController::class.java)
 
     @GetMapping("/login")
     fun loginPage(): String {
@@ -29,7 +29,7 @@ class AuthViewController(private val authService: AuthService) {
         response: HttpServletResponse
     ): String {
         try {
-            val (result, jwtCookie) = authService.loginUser(signInRequest)
+            val (result, jwtCookie) = viewAuthService.loginUser(signInRequest)
             model.addAttribute("loginResult", result)
             log.info("Login result: $result with cookies: $jwtCookie")
 
@@ -55,7 +55,7 @@ class AuthViewController(private val authService: AuthService) {
     fun registerUser(@ModelAttribute signUpRequest: SignUpRequest, model: Model): String {
         val userMsgResponse = "userMsgResponse";
         try {
-            val result = authService.registerUser(signUpRequest)
+            val result = viewAuthService.registerUser(signUpRequest)
             model.addAttribute("registrationResult", result)
             log.info("Registration result: $result")
             return "auth/register :: #registration-result"
@@ -69,7 +69,7 @@ class AuthViewController(private val authService: AuthService) {
     @GetMapping("/check-username", produces = [MediaType.TEXT_HTML_VALUE])
     @ResponseBody
     fun checkUsername(@RequestParam username: String): String {
-        val isAvailable = authService.checkUsernameAvailability(username)
+        val isAvailable = viewAuthService.checkUsernameAvailability(username)
         return if (isAvailable) {
             "<span style='color: green;'>Username is available</span>"
         } else {
@@ -80,7 +80,7 @@ class AuthViewController(private val authService: AuthService) {
     @GetMapping("/check-email", produces = [MediaType.TEXT_HTML_VALUE])
     @ResponseBody
     fun checkEmail(@RequestParam email: String): String {
-        val isAvailable = authService.checkEmailAvailability(email)
+        val isAvailable = viewAuthService.checkEmailAvailability(email)
         return if (isAvailable) {
             "<span style='color: green;'>Email is available</span>"
         } else {
