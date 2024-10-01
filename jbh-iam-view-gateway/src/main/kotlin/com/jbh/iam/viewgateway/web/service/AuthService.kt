@@ -13,7 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 @Service
 class AuthService(private val restTemplate: RestTemplate) {
 
-    private val AUTH_API_PATH = "/auth";
+    private val AUTH_API_PATH = "/iam-api/auth";
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthService::class.java)
@@ -32,14 +32,18 @@ class AuthService(private val restTemplate: RestTemplate) {
 
     fun registerUser(signUpRequest: SignUpRequest): String {
         val baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
-        val response = restTemplate.postForEntity(baseUrl + "/auth/signup", signUpRequest, String::class.java)
+        val response =
+            restTemplate.postForEntity("${baseUrl}/${AUTH_API_PATH}/signup", signUpRequest, String::class.java)
         return response.body ?: "Error occurred during registration"
     }
 
     fun checkUsernameAvailability(username: String): Boolean {
         val baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
         val response =
-            restTemplate.getForEntity(baseUrl + "/auth/checkUsernameAvailability?nickName=$username", Map::class.java)
+            restTemplate.getForEntity(
+                "${baseUrl}/${AUTH_API_PATH}/checkUsernameAvailability?nickName=$username",
+                Map::class.java
+            )
         return response.body?.get("available") as Boolean? ?: false
     }
 
@@ -47,7 +51,10 @@ class AuthService(private val restTemplate: RestTemplate) {
         val baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
         try {
             val response =
-                restTemplate.getForEntity(baseUrl + "/auth/checkEmailAvailability?email=$email", Map::class.java)
+                restTemplate.getForEntity(
+                    "${baseUrl}/${AUTH_API_PATH}/checkEmailAvailability?email=$email",
+                    Map::class.java
+                )
             return response.body?.get("available") as Boolean? ?: false
         } catch (e: Exception) {
             log.error("Error while checking email availability", e)

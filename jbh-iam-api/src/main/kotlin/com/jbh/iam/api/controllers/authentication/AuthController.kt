@@ -64,14 +64,17 @@ class AuthController(
 
         // Invalidate session
         val session = request.getSession(false)
-        session?.invalidate()
+        with(session) {
+            invalidate()
+            authenticationOperationService.logout()
 
-        authenticationOperationService.logout()
+            // Clear the authentication cookie
+            cookieService.clearAuthCookie(response)
 
-        // Clear the authentication cookie
-        cookieService.clearAuthCookie(response)
+            return ResponseEntity.ok(ApiResponse(true, "Logged out successfully"))
+        }
 
-        return ResponseEntity.ok(ApiResponse(true, "Logged out successfully"))
+        return ResponseEntity.badRequest().body(ApiResponse(false, "Why?? :("))
     }
 
 

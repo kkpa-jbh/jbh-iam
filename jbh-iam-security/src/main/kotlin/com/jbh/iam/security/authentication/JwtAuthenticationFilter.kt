@@ -1,6 +1,7 @@
 package com.jbh.iam.security.authentication
 
 import com.jbh.iam.common.extensions.withMetadata
+import com.jbh.iam.security.authorization.AuthorizationRules
 import com.jbh.iam.security.service.CustomUserDetailsService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -40,10 +41,14 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        logger.info("Request URI: ${request.requestURI}")
+        val uri = request.requestURI
 
         // Exclude static resources and public endpoints
-        if (!isPublicEndpoint(request.requestURI) && !isStaticResource(request.requestURI)) {
+        val isPublicEndpoint = isPublicEndpoint(uri)
+        val isStaticResource = isStaticResource(uri)
+        val isPublicPage = isPublicPage(uri)
+        logger.info("Analyzing URI ${uri} PublicAPI: $isPublicEndpoint - StaticResource: $isStaticResource - PublicPage: $isPublicPage")
+        if (!isPublicEndpoint && !isStaticResource && !isPublicPage) {
             try {
                 tokenProvider.findJWTFromRequest(request)?.let {
                     logger.info("JWT from cookie: $it")
@@ -71,16 +76,16 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     }
 
     private fun isPublicEndpoint(uri: String): Boolean {
-        logger.info("Checking if $uri is public endpoint")
-        return uri.contains("/actuator")
-                || uri.startsWith("/jbh/auth/")
-                || uri.startsWith("/jbh/iam-api/auth/") ||
-                uri.startsWith("/jbh/view/auth")
+        val uriWithoutContextPath = uri.replaceFirst("/jbh", "");
+        return AuthorizationRules.AUTH_API_WHITELIST.any { uriWithoutContextPath.startsWith(it.replace("/**", "")) }
+    }
+
+    private fun isPublicPage(uri: String): Boolean {
+        return AuthorizationRules.AUTH_VIEW_WHITELIST.any { uri.startsWith(it) }
     }
 
     private fun isStaticResource(uri: String): Boolean {
         var result = withMetadata("url" to uri) {
-            logger.info("Checking if $uri is static resource")
             val staticPaths = listOf("/js/", "/css/", "/images/", "/webjars/")
             return@withMetadata staticPaths.any { uri.contains(it) }
         }

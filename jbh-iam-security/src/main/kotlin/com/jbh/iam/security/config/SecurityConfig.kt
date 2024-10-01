@@ -95,19 +95,7 @@ class SecurityConfig() {
             web.debug(securityDebug)
                 .ignoring()
                 .requestMatchers(
-                    "/css/**",
-                    "/js/**",
-                    "/img/**",
-                    "/images/**",
-                    "/",
-                    "/favicon.ico",
-                    "/**/*.png",
-                    "/**/*.gif",
-                    "/**/*.svg",
-                    "/**/*.jpg",
-                    "/**/*.html",
-                    "/**/*.css",
-                    "/**/*.js"
+                    *AuthorizationRules.STATIC_RESOURCES
                 )
         }
     }
@@ -134,7 +122,7 @@ class SecurityConfig() {
         http
             .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
             .authorizeHttpRequests(jbhAuthorizer)
-            .addFilterBefore(
+            .addFilterAfter(
                 jwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter::class.java
             ) // Adding to the chain.

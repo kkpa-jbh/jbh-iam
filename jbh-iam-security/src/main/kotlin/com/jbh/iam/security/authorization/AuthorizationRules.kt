@@ -14,10 +14,36 @@ class AuthorizationRules :
     companion object {
         private val log = LoggerFactory.getLogger(AuthorizationRules::class.java)
         val AUTH_API_WHITELIST = arrayOf(
-            "/jbh/auth/signin",
-            "/jbh/auth/signup",
-            "/auth/**"
+            "/iam-api/auth/**",
+            "/auth/**",
+            "/actuator/",
+            "/auth/signin",
+            "/auth/checkUsernameAvailability",
+            "/auth/checkEmailAvailability",
+            "/auth/signup",
+
+            )
+
+        val AUTH_VIEW_WHITELIST = arrayOf(
+            "/jbh/view/auth/",
         )
+
+        val STATIC_RESOURCES = arrayOf(
+            "/css/**",
+            "/js/**",
+            "/img/**",
+            "/images/**",
+            "/",
+            "/favicon.ico",
+            "/**/*.png",
+            "/**/*.gif",
+            "/**/*.svg",
+            "/**/*.jpg",
+            "/**/*.html",
+            "/**/*.css",
+            "/**/*.js"
+        )
+
     }
 
     private val AUTH_WHITELIST = arrayOf(
@@ -28,7 +54,6 @@ class AuthorizationRules :
         "/swagger-ui.html",
         "/service",
         "/actuator/**",
-        "/checkService",
         "/configuration/ui",
         "/configuration/security",
         "/static/**",
