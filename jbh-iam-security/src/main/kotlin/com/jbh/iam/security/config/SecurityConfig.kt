@@ -35,7 +35,7 @@ import java.util.*
 ) // : Enables annotation-based security (like @PreAuthorize).
 class SecurityConfig() {
 
-    var securityDebug = false
+    var securityDebug = true
 
     @Autowired
     lateinit var jbhAuthorizer: AuthorizationRules

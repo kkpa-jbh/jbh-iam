@@ -25,7 +25,12 @@ class JwtAuthenticationEntryPoint(private val objectMapper: ObjectMapper) : Auth
         response: HttpServletResponse,
         authException: AuthenticationException
     ) {
-        log.error("JBH Unauthorized error: {}", authException.message)
+        authException.printStackTrace();
+        log.error(
+            "JBH Unauthorized error: {} - {}",
+            request?.requestURI,
+            authException.message
+        )
 
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.status = HttpServletResponse.SC_UNAUTHORIZED

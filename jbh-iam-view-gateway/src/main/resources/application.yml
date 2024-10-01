@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: jbh-iam-service
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        health-check-path: /jbh/actuator/health
+        health-check-interval: 60s
+        prefer-ip-address: false
+        instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

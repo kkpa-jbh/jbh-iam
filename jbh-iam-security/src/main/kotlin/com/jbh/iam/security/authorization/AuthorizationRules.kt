@@ -43,11 +43,9 @@ class AuthorizationRules :
         log.info("Registering JBH authorization rules")
 
         registry
-            //.requestMatchers(*AUTH_WHITELIST).permitAll()
-            .requestMatchers("/jbh/auth/signin").permitAll()  // Specific rule for signin
-            .requestMatchers("/jbh/auth/signup").permitAll()  // Specific rule for signin
-            .requestMatchers("/jbh/auth/**").permitAll()
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers(*AUTH_WHITELIST).permitAll()
+            .requestMatchers(*AUTH_API_WHITELIST).permitAll()
+            .requestMatchers("/view/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/party-deserialization/**").permitAll()
             .requestMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
             .requestMatchers("/user/**").hasAuthority("ROLE_USER")

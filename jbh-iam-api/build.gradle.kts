@@ -28,6 +28,6 @@ dependencies {
     implementation("org.hibernate:hibernate-core:6.1.7.Final")
     // Add other API-related dependencies
 
+    implementation("org.postgresql:postgresql:${property("postgresqlVersion")}")
 
-    runtimeOnly("org.postgresql:postgresql")
 }

@@ -54,7 +54,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
                 throw IllegalArgumentException("Request not valid")
             }
         }
-        logger.info("Filter chain executed")
+        logger.info("Do Filter ${filterChain} - ${request}")
         filterChain.doFilter(request, response)
     }
 
@@ -72,16 +72,19 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
 
     private fun isPublicEndpoint(uri: String): Boolean {
         logger.info("Checking if $uri is public endpoint")
-        return uri.startsWith("/jbh/auth/") || uri.startsWith("/jbh/view/auth")
+        return uri.contains("/actuator")
+                || uri.startsWith("/jbh/auth/")
+                || uri.startsWith("/jbh/iam-api/auth/") ||
+                uri.startsWith("/jbh/view/auth")
     }
 
     private fun isStaticResource(uri: String): Boolean {
-        withMetadata("url" to uri) {
+        var result = withMetadata("url" to uri) {
             logger.info("Checking if $uri is static resource")
             val staticPaths = listOf("/js/", "/css/", "/images/", "/webjars/")
             return@withMetadata staticPaths.any { uri.contains(it) }
         }
-        return false
+        return result
     }
 
 }

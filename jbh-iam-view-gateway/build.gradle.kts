@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":jbh-iam-security"))
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
 //implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")

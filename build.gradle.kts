@@ -1,3 +1,7 @@
+extra["postgresqlVersion"] = "42.5.0"
+extra["springCloudVersion"] = "2023.0.0"
+
+
 plugins {
     kotlin("jvm") version "1.9.20" apply false
     kotlin("plugin.spring") version "1.9.20" apply false
@@ -5,6 +9,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4" apply false
     java
 }
+
 
 allprojects {
     group = "com.kkpa"
@@ -43,6 +48,14 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.springframework.boot:spring-boot-starter")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+
+
+    // To apply the dependency management plugin/block to all subprojects
+    the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
