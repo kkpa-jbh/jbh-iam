@@ -1,8 +1,33 @@
+# Server Configuration
+hostname: ${INSTANCE_HOSTNAME:localhost}
+server:
+  port: ${INSTANCE_PORT:9999}
+  servlet:
+    context-path: /jbh
+  compression:
+    enabled: true
+
+# Logging Configuration
+## Conversion Word = https://logback.qos.ch/manual/layouts.html#conversionWord
+logging:
+  pattern:
+    console: "%cyan(%d{dd-MM-yy HH:mm:ss.SSS}) %magenta(%logger{36}.%M) %highlight(%-3level) - %highlight(%msg%n)"
+
+# Spring Security JWT
+app:
+  jwtSecret: ${JWT_SECRET:JWTSuperSecretKey}
+  jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:604800000}
+
 spring:
   profiles:
     active: local
   application:
     name: jbh-iam-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${hostname}:5432/${DB_NAME:jbh}
+    username: jbh_admin
+    password: ${JBH_ADMIN_PASS:idk--ras-pu--kk}
   cloud:
     consul:
       host: localhost
@@ -13,3 +38,39 @@ spring:
         health-check-interval: 60s
         prefer-ip-address: false
         instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    time-zone: UTC
+    date-format: yyyy-MM-dd
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        temp:
+          use_jdbc_metadata_defaults: false
+    generate-ddl: false
+    # It's managed by liquibase, that's why its value its none.
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+  mvc:
+    pathmatch:
+      # To Fix: No more pattern data allowed after {*...} or ** pattern element
+      matching-strategy: ANT_PATH_MATCHER
+  thymeleaf:
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    content-type: text/html
+    servlet:
+      content-type: text/html
+    template-resolver-order: 1
