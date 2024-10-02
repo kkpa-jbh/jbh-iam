@@ -3,15 +3,9 @@ hostname: ${INSTANCE_HOSTNAME:localhost}
 server:
   port: ${INSTANCE_PORT:9999}
   servlet:
-    context-path: /jbh
+    context-path: ${INSTANCE_CONTEXT_PATH:/jbh}
   compression:
     enabled: true
-
-# Logging Configuration
-## Conversion Word = https://logback.qos.ch/manual/layouts.html#conversionWord
-logging:
-  pattern:
-    console: "%cyan(%d{dd-MM-yy HH:mm:ss.SSS}) %magenta(%logger{36}.%M) %highlight(%-3level) - %highlight(%msg%n)"
 
 # Spring Security JWT
 app:
@@ -30,11 +24,11 @@ spring:
     password: ${JBH_ADMIN_PASS:idk--ras-pu--kk}
   cloud:
     consul:
-      host: localhost
-      port: 8500
+      host: ${hostname}
+      port: ${CONSUL_PORT:8500}
       discovery:
         enabled: true
-        health-check-path: /jbh/actuator/health
+        health-check-path: ${INSTANCE_CONTEXT_PATH:/jbh}/actuator/health
         health-check-interval: 60s
         prefer-ip-address: false
         instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

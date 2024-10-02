@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <property name="LOG_FOLDER" value="../logs" />
-    <property name="LOG_FILE" value="jbh-core.log" />
+    <property name="LOG_FOLDER" value="../logs"/>
+    <property name="LOG_FILE" value="jbh-iam.log"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_FOLDER}/${LOG_FILE}</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>
-                ${LOG_FOLDER}/archived/jbh_log_%d{dd-MM-yyyy}.log
+                ${LOG_FOLDER}/archived/iam_srv_log_%d{dd-MM-yyyy}.log
             </fileNamePattern>
             <maxHistory>10</maxHistory>
             <totalSizeCap>100MB</totalSizeCap>
@@ -26,17 +26,19 @@
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n
+                %magenta(%d{dd-MM-yyyy HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %logger{36}.%M -
+                %highlight(%msg)
+                %n
             </pattern>
         </encoder>
     </appender>
 
 
     <root level="INFO">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE"/>
     </root>
-    <root level="DEBUG">
-        <appender-ref ref="CONSOLE" />
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </configuration>
