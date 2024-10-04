@@ -4,11 +4,9 @@ import com.jbh.iam.api.domain.Users.User
 import com.jbh.iam.api.domain.toDTOList
 import com.jbh.iam.api.dto.UserDTO
 import com.jbh.iam.api.exceptions.web.ResourceNotFoundException
-import com.jbh.iam.api.repositories.users.UserGroupRepository
 import com.jbh.iam.api.repositories.users.UserRepository
 import com.jbh.iam.api.services.CrudService
 import com.jbh.iam.core.model.UserCore
-import com.jbh.iam.core.model.UserGroupCore
 import com.jbh.iam.core.model.UserRole
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,8 +15,7 @@ import java.util.*
 @Service
 @Transactional
 class UserServiceImpl(
-    private val userRepository: UserRepository,
-    private val userGroupRepository: UserGroupRepository
+    private val userRepository: UserRepository
 ) : CrudService<UserDTO>(), UserService {
 
     override fun validateSaveOperation(dto: UserDTO) {
@@ -91,10 +88,20 @@ class UserServiceImpl(
     }
 
     override fun findById(id: UUID): UserDTO? {
+        val user = userRepository.findById(id)
+
+        if (user.isPresent) {
+            return user.get().toDTO()
+        }
+
+        return null
+    }
+
+    override fun findUserCoreById(id: UUID): UserCore? {
         val user = userRepository.findById(id).orElse(null)
 
         user?.let {
-            return it.toDTO()
+            return mapUserToCore(it)
         }
 
         return null
@@ -130,21 +137,6 @@ class UserServiceImpl(
         return userCore
     }
 
-
-    override fun findByUserOwnerId(id: UUID): UserGroupCore? {
-        val userGroup = userGroupRepository.findByUserOwnerId(id)
-            ?: throw IllegalArgumentException("User not found with id : $id")
-
-        val userGroupCore = UserGroupCore(
-            id = userGroup.id,
-            name = userGroup.name,
-            single = userGroup.single,
-            userOwner = mapUserToCore(userGroup.userOwner),
-        )
-        log.info("loading user by ownerId... User Found! ${userGroup.userOwner?.nickName}")
-
-        return userGroupCore
-    }
 
     fun findByNickName(nickName: String): UserDTO {
         userRepository.findByNickName(nickName)?.let {

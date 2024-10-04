@@ -51,10 +51,11 @@ class CustomUserDetailsService : UserDetailsService {
      */
     fun loadUserById(id: UUID): UserDetails {
         log.info("Loading User by Id... ${id}")
-        val userGroup = userDataAccess.findByUserOwnerId(id)
+        val user = userDataAccess.findByUserId(id)
             ?: throw UsernameNotFoundException("User not found with id : " + id!!)
 
-        log.info("Loading User by Id... User Found! ${UserPrincipal.create(userGroup)}")
-        return UserPrincipal.create(userGroup)
+        log.error("FIX ME! ")
+        log.info("Loading User by Id... User Found! ${UserPrincipal.create(user)}")
+        return UserPrincipal.create(user)
     }
 }

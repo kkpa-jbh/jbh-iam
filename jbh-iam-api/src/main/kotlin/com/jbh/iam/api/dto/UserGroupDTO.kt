@@ -11,16 +11,15 @@ data class UserGroupDTO(
     @JsonIgnore
     val id: UUID? = null,
     val name: String = DefaultValues.EMPTY_STRING,
-    var single: Boolean = true,
-    var userOwner: UserDTO? = null
-) : JbhDTO, DomainConverter<UserGroupDTO, UsersGroup> {
+    val shortName: String = DefaultValues.EMPTY_STRING,
+
+    ) : JbhDTO, DomainConverter<UserGroupDTO, UsersGroup> {
 
     override fun toDomain(): UsersGroup {
         return UsersGroup(
             this.id,
             name = this.name,
-            single = this.single,
-            userOwner = this.userOwner!!.toDomain()
+            shortName = this.shortName
         )
     }
 }

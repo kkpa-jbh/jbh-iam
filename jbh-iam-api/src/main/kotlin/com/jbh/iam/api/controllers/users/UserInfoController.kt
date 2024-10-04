@@ -2,7 +2,7 @@ package com.jbh.iam.api.controllers.users
 
 import com.jbh.iam.api.Routes
 import com.jbh.iam.api.dto.UserDTO
-import com.jbh.iam.api.services.users.UserService
+import com.jbh.iam.api.services.CrudService
 import com.jbh.iam.core.access.AuthenticationOperationService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.ResponseEntity
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(Routes.USER_INFO_PATH)
 class UserInfoController(
     @Qualifier("authenticationServiceImpl") private val authenticationSrv: AuthenticationOperationService,
-    private val userService: UserService
+    private val userService: CrudService<UserDTO>
 ) {
 
     @GetMapping("")

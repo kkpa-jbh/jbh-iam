@@ -17,7 +17,8 @@ import java.util.*
  * This constraints are taken and created into the database. (Anonymous way)
  */
 @Table(
-    name = "JBH_USER",
+    name = "user",
+    schema = "iam",
     uniqueConstraints = [(UniqueConstraint(columnNames = ["nick_name", "email"]))]
 )
 open class User(
@@ -56,6 +57,7 @@ open class User(
     @ManyToMany(fetch = FetchType.LAZY, cascade = arrayOf(CascadeType.ALL))
     @JoinTable(
         name = "user_roles",
+        schema = "iam",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )

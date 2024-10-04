@@ -3,7 +3,6 @@ package com.jbh.iam.api.services
 import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.core.access.UserDataAccess
 import com.jbh.iam.core.model.UserCore
-import com.jbh.iam.core.model.UserGroupCore
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -28,12 +27,12 @@ class UserDataAccessImpl : UserDataAccess {
         return user
     }
 
-    override fun findByUserOwnerId(id: UUID): UserGroupCore? {
+    override fun findByUserId(id: UUID): UserCore? {
         log.info("loading user by ownerId... ")
-        val userGroup = userService.findByUserOwnerId(id)
+        val user = userService.findUserCoreById(id)
             ?: throw IllegalArgumentException("User not found with id : $id")
 
-        log.info("loading user by ownerId... User Found! ${userGroup.userOwner?.nickName}")
-        return userGroup
+        log.info("loading user by ownerId... User Found! ${user.nickName}")
+        return user
     }
 }

@@ -1,10 +1,9 @@
 package com.jbh.iam.api.services
 
 import com.jbh.iam.api.domain.Users.User
-import com.jbh.iam.api.dto.UserGroupDTO
 import com.jbh.iam.api.exceptions.web.AppException
 import com.jbh.iam.api.repositories.users.RoleRepository
-import com.jbh.iam.api.services.users.UserGroupServiceImpl
+import com.jbh.iam.api.repositories.users.UserRepository
 import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.common.logging.customLogger
 import com.jbh.iam.common.payload.SignUpRequest
@@ -18,8 +17,8 @@ import java.util.*
 class UserRegistrationService(
     private val userService: UserService,
     private val roleRepository: RoleRepository,
-    @Qualifier("jbhPasswordEncoder") private val jbhPasswordEncoder: IPasswordEncoder,
-    private val userGroupServiceImpl: UserGroupServiceImpl,
+    private val userRepository: UserRepository,
+    @Qualifier("jbhPasswordEncoder") private val jbhPasswordEncoder: IPasswordEncoder
 ) {
 
     private val log = customLogger()
@@ -49,7 +48,7 @@ class UserRegistrationService(
 
         user.roles = (Collections.singleton(userRole))
 
-        userGroupServiceImpl.save(UserGroupDTO(name = user.nickName, userOwner = user.toDTO()))
+        userRepository.save(user)
 
         // Saving default account
         //TODO save account
