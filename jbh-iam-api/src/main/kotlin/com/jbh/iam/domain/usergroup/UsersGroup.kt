@@ -1,11 +1,11 @@
-package com.jbh.iam.api.domain.Users
+package com.jbh.iam.domain.usergroup
 
-import com.jbh.iam.api.domain.AuditModel
 import com.jbh.iam.api.domain.DTOConverter
 import com.jbh.iam.api.dto.UserGroupDTO
 import com.jbh.iam.api.util.DefaultValues
 import com.jbh.iam.api.util.DefaultValues.MAX_DESC_NAMES_LENGTH
 import com.jbh.iam.api.util.DefaultValues.MIN_DESC_NAMES_LENGTH
+import com.jbh.iam.domain.AuditModel
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

@@ -1,13 +1,9 @@
 package com.jbh.iam.api.services.users
 
-import com.jbh.iam.api.domain.Users.User
-import com.jbh.iam.api.domain.toDTOList
-import com.jbh.iam.api.dto.UserDTO
+import com.jbh.iam.api.dto.*
 import com.jbh.iam.api.exceptions.web.ResourceNotFoundException
-import com.jbh.iam.api.repositories.users.UserRepository
-import com.jbh.iam.api.services.CrudService
-import com.jbh.iam.core.model.UserCore
-import com.jbh.iam.core.model.UserRole
+import com.jbh.iam.domain.user.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -16,41 +12,43 @@ import java.util.*
 @Transactional
 class UserServiceImpl(
     private val userRepository: UserRepository
-) : CrudService<UserDTO>(), UserService {
+) : UserService {
 
-    override fun validateSaveOperation(dto: UserDTO) {
+    val log = LoggerFactory.getLogger(UserServiceImpl::class.java)
+
+    fun validateSaveOperation(dto: InternalUserDTO) {
         if (!isNewAndUnique(dto)) {
             throw IllegalArgumentException("User ${dto.email} - ${dto.nickName} already was registered.")
         }
     }
 
-    override fun isNewAndUnique(dto: UserDTO): Boolean {
+    fun isNewAndUnique(dto: InternalUserDTO): Boolean {
         return dto.id == null && findByUniqueUser(dto) == null
     }
 
     @Transactional(readOnly = true)
-    override fun findByUniqueUser(userDTO: UserDTO): UserDTO? {
+    override fun findByUniqueUser(userDTO: InternalUserDTO): InternalUserDTO {
         try {
             return userRepository.findByNickNameOrEmail(
                 nickName = userDTO.nickName,
                 email = userDTO.email
-            )?.toDTO() ?: null
+            )?.toInternalUserDTO() ?: throw IllegalArgumentException("User not found with username or email $userDTO")
         } catch (e: org.springframework.dao.IncorrectResultSizeDataAccessException) {
             throw IllegalArgumentException("Nickname and email already were registered!")
         }
     }
 
-    override fun saveOperation(userDTO: UserDTO): UserDTO {
+    fun saveOperation(userDTO: InternalUserDTO): InternalUserDTO {
         log.warn("Verifying Password...")
         var userToSave = userDTO.toDomain();
-        return userRepository.save(userToSave).toDTO()
+        return userRepository.save(userToSave).toInternalUserDTO()
     }
 
-    override fun validateUpdateOperation(dto: UserDTO) {
+    fun validateUpdateOperation(dto: InternalUserDTO) {
         userAlreadyExistsThenThrowAnException(dto)
     }
 
-    fun userAlreadyExistsThenThrowAnException(dto: UserDTO) {
+    fun userAlreadyExistsThenThrowAnException(dto: InternalUserDTO) {
         val userBD = findByUniqueUser(dto)
         userBD?.let {
 
@@ -65,11 +63,11 @@ class UserServiceImpl(
         }
     }
 
-    override fun updateOperation(dto: UserDTO): UserDTO {
-        return userRepository.save(dto.toDomain()).toDTO()
+    fun updateOperation(dto: InternalUserDTO): InternalUserDTO {
+        return userRepository.save(dto.toDomain()).toInternalUserDTO()
     }
 
-    override fun delete(dto: UserDTO): Boolean {
+    fun delete(dto: InternalUserDTO): Boolean {
         dto?.also {
             try {
                 userRepository.deleteById(dto.id!!); return true
@@ -81,30 +79,18 @@ class UserServiceImpl(
         throw java.lang.IllegalArgumentException("Not user to be deleted")
     }
 
-    override fun findAll(): List<UserDTO> {
+    fun findAll(): List<PublicUserInfo> {
         val users = userRepository.findAll()
 
-        return users.toDTOList()
+        return users.parallelStream().map { it.toPublicInfo() }.toList()
     }
 
-    override fun findById(id: UUID): UserDTO? {
-        val user = userRepository.findById(id)
-
-        if (user.isPresent) {
-            return user.get().toDTO()
+    override fun findById(id: UUID): InternalUserDTO {
+        return userRepository.findById(id).run {
+            return this.isPresent.let {
+                if (it) this.get().toInternalUserDTO() else throw IllegalArgumentException("User not found with id $id")
+            }
         }
-
-        return null
-    }
-
-    override fun findUserCoreById(id: UUID): UserCore? {
-        val user = userRepository.findById(id).orElse(null)
-
-        user?.let {
-            return mapUserToCore(it)
-        }
-
-        return null
     }
 
     override fun existsByNickName(nickName: String): Boolean {
@@ -115,32 +101,17 @@ class UserServiceImpl(
         return userRepository.existsByEmail(email)
     }
 
-    override fun findByNickNameOrEmail(nickName: String, email: String): UserCore? {
+    override fun findByNickNameOrEmail(nickName: String, email: String): InternalUserDTO {
         val user = userRepository.findByNickNameOrEmail(nickName, email)
             ?: throw IllegalArgumentException("User not found with username or email $email")
         log.info("loading user by userName... User Found! ${user.nickName}")
 
-        return mapUserToCore(user)
+        return user.toInternalUserDTO()
     }
 
-    private fun mapUserToCore(user: User): UserCore {
-        val userRoles = user.roles.map { UserRole(it.id, it.name) }.toSet()
-
-        val userCore = UserCore(
-            id = user.id,
-            userName = user.userName,
-            email = user.email,
-            nickName = user.nickName,
-            password = user.password,
-            roles = userRoles
-        )
-        return userCore
-    }
-
-
-    fun findByNickName(nickName: String): UserDTO {
+    fun findByNickName(nickName: String): PublicUserInfo {
         userRepository.findByNickName(nickName)?.let {
-            return it.toDTO()
+            return it.toPublicInfo()
         }
         throw ResourceNotFoundException("User", "nickname", nickName)
     }

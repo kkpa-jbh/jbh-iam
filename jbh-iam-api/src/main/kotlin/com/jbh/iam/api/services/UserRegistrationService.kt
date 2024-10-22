@@ -1,14 +1,14 @@
 package com.jbh.iam.api.services
 
-import com.jbh.iam.api.domain.Users.User
 import com.jbh.iam.api.exceptions.web.AppException
-import com.jbh.iam.api.repositories.users.RoleRepository
-import com.jbh.iam.api.repositories.users.UserRepository
 import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.common.logging.customLogger
 import com.jbh.iam.common.payload.SignUpRequest
 import com.jbh.iam.core.model.RoleName
 import com.jbh.iam.core.security.IPasswordEncoder
+import com.jbh.iam.domain.user.model.UserEntity
+import com.jbh.iam.domain.user.repository.RoleRepository
+import com.jbh.iam.domain.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
@@ -36,7 +36,7 @@ class UserRegistrationService(
         }
 
         // Creating user's accountId
-        val user = User(
+        val user = UserEntity(
             userName = signUpRequest.name, nickName = signUpRequest.username,
             email = signUpRequest.email, password = signUpRequest.password
         )

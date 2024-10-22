@@ -1,8 +1,8 @@
 package com.jbh.iam.api.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.jbh.iam.api.domain.Users.UsersGroup
 import com.jbh.iam.api.util.DefaultValues
+import com.jbh.iam.domain.usergroup.UsersGroup
 import org.springframework.stereotype.Component
 import java.util.*
 

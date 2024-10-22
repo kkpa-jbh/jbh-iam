@@ -1,4 +1,4 @@
-package com.jbh.iam.api.domain
+package com.jbh.iam.domain
 
 import jakarta.persistence.Column
 import jakarta.persistence.EntityListeners

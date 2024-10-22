@@ -1,19 +1,17 @@
 package com.jbh.iam.api.services.users
 
-import com.jbh.iam.api.dto.UserDTO
-import com.jbh.iam.core.model.UserCore
+import com.jbh.iam.api.dto.InternalUserDTO
 import java.util.*
 
 interface UserService {
 
-    //FIXME Check what is DTO vs CORE
-    fun findByUniqueUser(userDTO: UserDTO): UserDTO?
+    fun findByUniqueUser(userDTO: InternalUserDTO): InternalUserDTO
 
     fun existsByNickName(nickName: String): Boolean
 
     fun existsByEmail(email: String): Boolean
 
-    fun findByNickNameOrEmail(nickName: String, email: String): UserCore?
+    fun findByNickNameOrEmail(nickName: String, email: String): InternalUserDTO
 
-    fun findUserCoreById(id: UUID): UserCore?
+    fun findById(id: UUID): InternalUserDTO
 }

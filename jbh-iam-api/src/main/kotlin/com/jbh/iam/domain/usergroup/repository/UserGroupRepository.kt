@@ -1,6 +1,6 @@
-package com.jbh.iam.api.repositories.users
+package com.jbh.iam.domain.usergroup.repository
 
-import com.jbh.iam.api.domain.Users.UsersGroup
+import com.jbh.iam.domain.usergroup.UsersGroup
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*

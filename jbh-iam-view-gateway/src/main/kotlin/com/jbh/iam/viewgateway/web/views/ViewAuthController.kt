@@ -53,7 +53,6 @@ class ViewAuthController(private val viewAuthService: ViewAuthService) {
 
     @PostMapping("/register")
     fun registerUser(@ModelAttribute signUpRequest: SignUpRequest, model: Model): String {
-        val userMsgResponse = "userMsgResponse";
         try {
             val result = viewAuthService.registerUser(signUpRequest)
             model.addAttribute("registrationResult", result)

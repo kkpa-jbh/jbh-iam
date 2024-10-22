@@ -1,10 +1,7 @@
-package com.jbh.iam.api.domain.Users
+package com.jbh.iam.domain.user.model
 
-import com.jbh.iam.api.domain.AuditModel
-import com.jbh.iam.api.domain.DTOConverter
-import com.jbh.iam.api.dto.UserDTO
 import com.jbh.iam.api.util.DefaultValues
-import com.jbh.iam.core.model.RoleName
+import com.jbh.iam.domain.AuditModel
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
@@ -21,7 +18,7 @@ import java.util.*
     schema = "iam",
     uniqueConstraints = [(UniqueConstraint(columnNames = ["nick_name", "email"]))]
 )
-open class User(
+open class UserEntity(
     @org.hibernate.annotations.GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @GeneratedValue(generator = "UUID")
     @Id
@@ -61,22 +58,8 @@ open class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    var roles: Set<Role> = mutableSetOf(Role())
+    var roles: Set<RoleEntity> = mutableSetOf(RoleEntity())
 
-) : AuditModel(), DTOConverter<UserDTO, User> {
+) : AuditModel() {
 
-    override fun toDTO(): UserDTO {
-        return UserDTO(
-            id = this.id,
-            userName = this.userName,
-            password = this.password,
-            email = this.email,
-            nickName = this.nickName,
-            roles = this.roles,
-            createdAt = this.createdAt
-
-        )
-    }
-
-    fun isAdmin(): Boolean = this.roles.map { it.name }.contains(RoleName.ROLE_ADMIN)
 }

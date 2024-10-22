@@ -25,12 +25,13 @@ class JwtTokenProvider {
     @Value("\${app.jwtExpirationInMs}")
     private val jwtExpirationInMs: Long = 0
 
-    var logger = LoggerFactory.getLogger(JwtTokenProvider::class.java)
+    var log = LoggerFactory.getLogger(JwtTokenProvider::class.java)
 
     fun generateToken(authentication: Authentication): String {
-        logger.info("Generating JWT Token... Expiration in ${jwtExpirationInMs} ms Secret is ${jwtSecret}")
+        log.info("Generating JWT Token... Expiration in ${jwtExpirationInMs} ms Secret is ${jwtSecret}")
         val userPrincipal: UserPrincipal = authentication.getPrincipal() as UserPrincipal
 
+        log.info("User Principal is ${userPrincipal}")
         val now = Instant.now()
         val expiryDate = now.plusMillis(jwtExpirationInMs)
 
@@ -43,7 +44,7 @@ class JwtTokenProvider {
     }
 
     fun getUserIdFromJWT(token: String): UUID? {
-        logger.info("Getting User Id from JWT...")
+        log.info("Getting User Id from JWT...")
         val claims = Jwts.parser()
             .setSigningKey(jwtSecret)
             .parseClaimsJws(token)
@@ -53,27 +54,27 @@ class JwtTokenProvider {
     }
 
     fun validateToken(authToken: String): Boolean {
-        logger.info("Validating JWT Token...")
+        log.info("Validating JWT Token...")
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken)
             return true
         } catch (ex: SignatureException) {
-            logger.error("Invalid JWT signature")
+            log.error("Invalid JWT signature")
         } catch (ex: MalformedJwtException) {
-            logger.error("Invalid JWT token")
+            log.error("Invalid JWT token")
         } catch (ex: ExpiredJwtException) {
-            logger.error("Expired JWT token")
+            log.error("Expired JWT token")
         } catch (ex: UnsupportedJwtException) {
-            logger.error("Unsupported JWT token")
+            log.error("Unsupported JWT token")
         } catch (ex: IllegalArgumentException) {
-            logger.error("JWT claims string is empty.")
+            log.error("JWT claims string is empty.")
         }
 
         return false
     }
 
     fun findJWTFromRequest(request: HttpServletRequest): String? {
-        logger.info("Getting JWT from request")
+        log.info("Getting JWT from request")
 
         var jwt = getJwtFromRequest(request)
         if (jwt.isBlank()) {
@@ -86,16 +87,16 @@ class JwtTokenProvider {
     }
 
     private fun getJwtFromCookie(request: HttpServletRequest): String? {
-        logger.info("Getting JWT from cookie")
+        log.info("Getting JWT from cookie")
         val cookies = request.cookies
         return cookies?.find { it.name == JBHConstants.JBH_TOKEN_COOKIE_NAME }?.value
     }
 
     private fun getJwtFromRequest(request: HttpServletRequest): String {
-        logger.info("Getting JWT from request")
+        log.info("Getting JWT from request")
         val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
         if (bearerToken == null) {
-            logger.error("Authorization header is missing in the request for URI: ${request.requestURI}")
+            log.error("Authorization header is missing in the request for URI: ${request.requestURI}")
         }
         bearerToken.startsWith("Bearer ").let {
             return bearerToken.substring(7, bearerToken.length)

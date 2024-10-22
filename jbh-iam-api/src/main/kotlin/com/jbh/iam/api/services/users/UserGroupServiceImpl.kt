@@ -2,8 +2,8 @@ package com.jbh.iam.api.services.users
 
 import com.jbh.iam.api.domain.toDTOList
 import com.jbh.iam.api.dto.UserGroupDTO
-import com.jbh.iam.api.repositories.users.UserGroupRepository
 import com.jbh.iam.api.services.CrudService
+import com.jbh.iam.domain.usergroup.repository.UserGroupRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
