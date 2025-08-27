@@ -3,7 +3,7 @@ CREATE SCHEMA iam;
 create table iam.user
 (
     id         UUID default gen_random_uuid() not null,
-    user_name  varchar(100),
+    user_name  varchar(150),
     email      varchar(255),
     nick_name  varchar(50),
     password   varchar(255),
@@ -17,7 +17,7 @@ create table iam.user_group
 (
     id         UUID default gen_random_uuid() not null,
     short_name varchar(20)                    not null unique,
-    name       varchar(50),
+    name       varchar(100),
     created_at timestamp with time zone       not null,
     updated_at timestamp with time zone,
     primary key (id)
