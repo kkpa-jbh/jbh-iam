@@ -23,7 +23,7 @@ class CookieService(private val environment: EnvironmentService) {
     fun setAuthCookie(response: HttpServletResponse, jwt: String) {
         val cookie = Cookie("__Secure-$JBH_TOKEN_COOKIE_NAME", jwt).apply {
             isHttpOnly = true
-            maxAge = 3600
+            maxAge = 3600 // 1 hour
             path = "/"
             // SameSite is set to Strict to prevent CSRF attacks
             setAttribute("SameSite", "Strict")

@@ -37,7 +37,7 @@ class JwtTokenProvider {
 
         return Jwts.builder()
             .setSubject(userPrincipal.id.toString())
-            .setIssuedAt(Date.from(expiryDate))
+            .setIssuedAt(Date.from(now))
             .setExpiration(Date.from(expiryDate))
             .signWith(SignatureAlgorithm.HS512, jwtSecret)
             .compact()
@@ -89,17 +89,25 @@ class JwtTokenProvider {
     private fun getJwtFromCookie(request: HttpServletRequest): String? {
         log.info("Getting JWT from cookie")
         val cookies = request.cookies
-        return cookies?.find { it.name == JBHConstants.JBH_TOKEN_COOKIE_NAME }?.value
+        // Look for both the secure and non-secure cookie names
+        return cookies?.find { 
+            it.name == "__Secure-${JBHConstants.JBH_TOKEN_COOKIE_NAME}" || 
+            it.name == JBHConstants.JBH_TOKEN_COOKIE_NAME 
+        }?.value
     }
 
     private fun getJwtFromRequest(request: HttpServletRequest): String {
         log.info("Getting JWT from request")
         val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
         if (bearerToken == null) {
-            log.error("Authorization header is missing in the request for URI: ${request.requestURI}")
+            log.debug("Authorization header is missing in the request for URI: ${request.requestURI}")
+            return ""
         }
-        bearerToken.startsWith("Bearer ").let {
-            return bearerToken.substring(7, bearerToken.length)
+        return if (bearerToken.startsWith("Bearer ")) {
+            bearerToken.substring(7)
+        } else {
+            log.debug("Authorization header does not start with Bearer for URI: ${request.requestURI}")
+            ""
         }
     }
 }

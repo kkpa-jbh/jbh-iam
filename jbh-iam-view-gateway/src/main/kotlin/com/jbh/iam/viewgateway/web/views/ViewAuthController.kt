@@ -22,6 +22,12 @@ class ViewAuthController(private val viewAuthService: ViewAuthService) {
         return "auth/login"
     }
 
+    @GetMapping("/test")
+    fun testPage(): String {
+        log.info("Loading test page")
+        return "test"
+    }
+
     @PostMapping("/signin")
     fun loginUser(
         @ModelAttribute signInRequest: LoginRequest,
