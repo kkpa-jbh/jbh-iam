@@ -22,10 +22,6 @@ ALTER DATABASE "jbh_iam_users" SET TIME ZONE 'America/Bogota';
 
 ```
 -- Remove All Data
-DELETE FROM transactions;
-DELETE FROM accounts;
-DELETE FROM sub_categories;
-DELETE FROM categories;
 DELETE FROM users_group;
 DELETE FROM user_roles;
 DELETE FROM jbh_user;
