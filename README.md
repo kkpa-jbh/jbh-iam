@@ -1,15 +1,6 @@
 # jbh-iam
 
-Multiple monolithic applications as "microservices":
-What you're describing is actually a well-known architectural pattern called the "Modular Monolith" or sometimes "
-Distributed Monolith". It's a valid and often beneficial intermediate step between a pure monolith and full
-microservices architecture. This approach:
-
-Allows for easier separation of concerns
-Enables different tech stacks for different parts of your system
-Facilitates gradual migration to microservices if needed in the future
-Maintains some benefits of monolithic architecture (simpler deployment, data consistency) while gaining some benefits of
-microservices (modularity, technology diversity)
+Modular monolith for handling IAM in JBH.
 
 ## Suggestions
 
