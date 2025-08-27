@@ -1,15 +1,16 @@
 # jbh-iam
 
-Multiple monolithic applications as "microservices":
-What you're describing is actually a well-known architectural pattern called the "Modular Monolith" or sometimes "
-Distributed Monolith". It's a valid and often beneficial intermediate step between a pure monolith and full
-microservices architecture. This approach:
+Modular monolith for handling IAM in JBH.
 
-Allows for easier separation of concerns
-Enables different tech stacks for different parts of your system
-Facilitates gradual migration to microservices if needed in the future
-Maintains some benefits of monolithic architecture (simpler deployment, data consistency) while gaining some benefits of
-microservices (modularity, technology diversity)
+This project is designed to centralize authentication, authorization, and user management for JBH applications. It provides APIs, security, and a gateway for handling IAM concerns in a modular, maintainable way, using Kotlin, Spring Boot, and Gradle. The structure supports code reuse, separation of concerns, and scalability.
+
+## Modules
+
+jbh-iam-api: Contains API endpoints, controllers, DTOs, and error handling for the IAM service. Handles HTTP requests and responses.
+jbh-iam-common: Shared code and utilities (e.g., config, extensions, logging, payloads) used across other modules.
+jbh-iam-core: Core business logic, domain models, and security/environment abstractions for IAM.
+jbh-iam-security: Handles authentication and security concerns, likely providing authentication mechanisms and security filters.
+jbh-iam-view-gateway: Acts as a gateway or frontend for the IAM system, possibly serving static resources, templates, and acting as an entry point for web clients.
 
 ## Suggestions
 
