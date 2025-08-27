@@ -1,6 +1,6 @@
 package com.jbh.iam.security.service
 
-import com.jbh.iam.core.access.UserDataAccess
+import com.jbh.iam.core.access.IUserDataAccess
 import com.jbh.iam.core.security.UserPrincipal
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,7 +26,7 @@ In our implementation, We’ll also define a custom UserPrincipal class that wil
 class CustomUserDetailsService : UserDetailsService {
 
     @Autowired
-    lateinit var userDataAccess: UserDataAccess
+    lateinit var userDataAccess: IUserDataAccess
 
     companion object {
         val log: Logger = LoggerFactory.getLogger(CustomUserDetailsService::class.java)
