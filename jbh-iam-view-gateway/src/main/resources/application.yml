@@ -21,7 +21,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${hostname}:5432/${DB_NAME:jbh}
     username: jbh_admin
-    password: ${JBH_ADMIN_PASS:idk--ras-pu--kk}
+    password: ${JBH_ADMIN_PASS:xxxxx}
   cloud:
     consul:
       host: ${hostname}
