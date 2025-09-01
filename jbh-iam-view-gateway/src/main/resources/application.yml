@@ -29,7 +29,7 @@ spring:
       discovery:
         enabled: true
         health-check-path: ${INSTANCE_CONTEXT_PATH:/jbh}/actuator/health
-        health-check-interval: 60s
+        health-check-interval: 6000s
         prefer-ip-address: false
         instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   jackson:

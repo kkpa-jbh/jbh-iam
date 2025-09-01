@@ -3,7 +3,7 @@
 # For tasks requiring password: make db-create PASSWORD=your_password
 
 # Variables
-DB_NAME = jbh_iam_users
+DB_NAME = jbh_finance
 DB_USER = jbh_admin
 DB_HOST = localhost
 DB_PORT = 5432
