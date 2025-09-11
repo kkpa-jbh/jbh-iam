@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
 
+private const val JBH_PATH = "/jbh"
+
 /**
  * We’ll use JWTAuthenticationFilter to implement a filter that -
 
@@ -76,12 +78,12 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     }
 
     private fun isPublicEndpoint(uri: String): Boolean {
-        val uriWithoutContextPath = uri.replaceFirst("/jbh", "");
+        val uriWithoutContextPath = uri;
         return AuthorizationRules.AUTH_API_WHITELIST.any { uriWithoutContextPath.startsWith(it.replace("/**", "")) }
     }
 
     private fun isPublicPage(uri: String): Boolean {
-        val uriWithoutContextPath = uri.replaceFirst("/jbh", "");
+        val uriWithoutContextPath = uri.replaceFirst(JBH_PATH, "");
         return AuthorizationRules.AUTH_VIEW_WHITELIST.any { uriWithoutContextPath.startsWith(it.replace("/**", "")) }
     }
 

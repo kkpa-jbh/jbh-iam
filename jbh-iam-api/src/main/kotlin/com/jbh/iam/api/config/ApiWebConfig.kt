@@ -10,6 +10,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class ApiWebConfig : WebMvcConfigurer {
     override fun configurePathMatch(configurer: PathMatchConfigurer) {
-        configurer.addPathPrefix(Routes.IAM_BASE_PATH, HandlerTypePredicate.forAnnotation(RestController::class.java))
+        configurer.addPathPrefix(Routes.IAM_BASE_API_PATH, HandlerTypePredicate.forAnnotation(RestController::class.java))
     }
 }

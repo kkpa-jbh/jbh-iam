@@ -3,7 +3,8 @@ hostname: ${INSTANCE_HOSTNAME:localhost}
 server:
   port: ${INSTANCE_PORT:9999}
   servlet:
-    context-path: ${INSTANCE_CONTEXT_PATH:/jbh}
+    #context-path: ${INSTANCE_CONTEXT_PATH:/jbh}
+    context-path: ${INSTANCE_CONTEXT_PATH:/}
   compression:
     enabled: true
 
@@ -28,8 +29,9 @@ spring:
       port: ${CONSUL_PORT:8500}
       discovery:
         enabled: true
-        health-check-path: ${INSTANCE_CONTEXT_PATH:/jbh}/actuator/health
-        health-check-interval: 6000s
+        #health-check-path: ${INSTANCE_CONTEXT_PATH:/jbh}/actuator/health
+        health-check-path: /actuator/health
+        health-check-interval: 60s
         prefer-ip-address: false
         instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   jackson:

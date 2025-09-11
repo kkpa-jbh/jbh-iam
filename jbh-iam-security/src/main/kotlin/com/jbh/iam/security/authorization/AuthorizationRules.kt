@@ -12,8 +12,11 @@ class AuthorizationRules :
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthorizationRules::class.java)
+        const val IAM_BASE_API_PATH = "/jbh-api"
+        const val AUTH_PATH = "/auth"
+
         val AUTH_API_WHITELIST = arrayOf(
-            "/iam-api/auth/**",
+            IAM_BASE_API_PATH + AUTH_PATH + "/**",
             "/actuator/**",
         )
 
@@ -27,6 +30,7 @@ class AuthorizationRules :
             "/css/**",
             "/images/**",
             "/docs/**",
+            "/swagger-ui.html",
         )
 
     }

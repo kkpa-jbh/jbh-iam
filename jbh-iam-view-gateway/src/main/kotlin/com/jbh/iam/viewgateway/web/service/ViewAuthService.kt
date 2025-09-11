@@ -13,7 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 @Service
 class ViewAuthService(private val restTemplate: RestTemplate) {
 
-    private val AUTH_API_PATH = "/iam-api/auth";
+    private val AUTH_API_PATH = "/jbh-api/auth";
 
     companion object {
         private val log = LoggerFactory.getLogger(ViewAuthService::class.java)

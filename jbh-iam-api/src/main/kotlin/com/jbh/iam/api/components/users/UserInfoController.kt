@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(Routes.USER_INFO_PATH)
+@RequestMapping(Routes.USERS_PATH + Routes.USER_INFO_PATH)
 class UserInfoController(
     @Qualifier("authenticationServiceImpl") private val authenticationSrv: AuthenticationOperationService,
     private val userService: UserService

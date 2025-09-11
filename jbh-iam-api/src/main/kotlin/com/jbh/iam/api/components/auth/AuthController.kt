@@ -56,25 +56,7 @@ class AuthController(
         return ResponseEntity.created(location).body<Any>(ApiResponse(true, "User registered successfully"))
     }
 
-    @PostMapping("/logout")
-    fun logout(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ApiResponse> {
-        log.info("Logging out user ")
 
-
-        // Invalidate session
-        val session = request.getSession(false)
-        with(session) {
-            invalidate()
-            authenticationOperationService.logout()
-
-            // Clear the authentication cookie
-            cookieService.clearAuthCookie(response)
-
-            return ResponseEntity.ok(ApiResponse(true, "Logged out successfully"))
-        }
-
-        return ResponseEntity.badRequest().body(ApiResponse(false, "Why?? :("))
-    }
 
 
     @GetMapping("/checkUsernameAvailability")
