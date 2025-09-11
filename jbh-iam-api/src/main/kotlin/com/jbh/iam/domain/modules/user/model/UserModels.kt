@@ -11,6 +11,7 @@ import java.util.*
  * sensitive user data should not be exposed.
  */
 data class PublicUserInfo(
+    var id: UUID? = UUID.randomUUID(),
     val username: String = "",
     val nickName: String = "",
     val email: String = ""
@@ -42,7 +43,7 @@ data class InternalUserDTO(
         email: String,
         password: String,
         roles: Set<RoleName>
-    ) : this(id, PublicUserInfo(username, nickName, email), password, roles)
+    ) : this(id, PublicUserInfo(id, username, nickName, email), password, roles)
 }
 
 // You can add extension functions or additional related utilities here
@@ -71,7 +72,7 @@ fun InternalUserDTO.toUserCore(): UserCore {
 }
 
 fun UserEntity.toPublicInfo(): PublicUserInfo {
-    return PublicUserInfo(this.userName, this.nickName, this.email)
+    return PublicUserInfo(this.id, this.userName, this.nickName, this.email)
 }
 
 fun UserEntity.toInternalUserDTO(): InternalUserDTO {
