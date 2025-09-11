@@ -13,9 +13,8 @@ class Routes {
 
     companion object {
         const val IAM_BASE_API_PATH = "/jbh-api"
+        const val REQ_SOURCE_HEADER = "JBH-XXX-REQ-SOURCE"
 
-        // Categories
-        const val USERS_PATH = "/users"
 
         // Authentication
         const val AUTH_PATH = "/auth"
@@ -23,6 +22,9 @@ class Routes {
         // Logout
         const val LOGOUT_PATH = "/logout"
 
+        // Users
+        const val USERS_PATH = "/users"
         const val USER_INFO_PATH = "/userinfo"
+        const val FIND_USERID_PATH = "/find-user-id"
     }
 }
