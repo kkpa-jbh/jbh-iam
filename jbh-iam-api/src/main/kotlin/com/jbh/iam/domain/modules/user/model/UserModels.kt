@@ -13,7 +13,8 @@ import java.util.*
 data class PublicUserInfo(
     val username: String = "",
     val nickName: String = "",
-    val email: String = ""
+    val email: String = "",
+    val roles: Set<RoleName> = setOf()
 )
 
 /**
@@ -31,6 +32,7 @@ data class InternalUserDTO(
     val username: String by publicInfo::username
     val nickName: String by publicInfo::nickName
     val email: String by publicInfo::email
+
 
     /**
      * Secondary constructor for convenience when creating from individual fields.
@@ -71,7 +73,7 @@ fun InternalUserDTO.toUserCore(): UserCore {
 }
 
 fun UserEntity.toPublicInfo(): PublicUserInfo {
-    return PublicUserInfo(this.userName, this.nickName, this.email)
+    return PublicUserInfo(this.userName, this.nickName, this.email, this.roles.map { it.name }.toSet())
 }
 
 fun UserEntity.toInternalUserDTO(): InternalUserDTO {

@@ -95,7 +95,7 @@ class JwtTokenProvider {
             it.name == JBHConstants.JBH_TOKEN_COOKIE_NAME 
         }?.value
     }
-
+//TODO Check the expiration of the JWT
     private fun getJwtFromRequest(request: HttpServletRequest): String {
         log.info("Getting JWT from request")
         val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
