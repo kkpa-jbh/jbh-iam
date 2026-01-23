@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component
 import java.time.Instant
 import java.util.*
 
+private const val ACCESS_TOKEN_TYPE = "ACCESS"
+private const val TOKEN_TYPE_CLAIM = "token_type"
+
 /**
  * The following utility class will be used for generating a JWT after a user logs in successfully,
  * and validating the JWT sent in the Authorization header of the requests -
@@ -35,11 +38,14 @@ class JwtTokenProvider {
         val now = Instant.now()
         val expiryDate = now.plusMillis(jwtExpirationInMs)
 
+        log.info("Signature Algorith changed!")
+
         return Jwts.builder()
             .setSubject(userPrincipal.id.toString())
             .setIssuedAt(Date.from(now))
             .setExpiration(Date.from(expiryDate))
-            .signWith(SignatureAlgorithm.HS512, jwtSecret)
+            .signWith(SignatureAlgorithm.HS256, jwtSecret)
+            .addClaims(mapOf(TOKEN_TYPE_CLAIM to ACCESS_TOKEN_TYPE))
             .compact()
     }
 

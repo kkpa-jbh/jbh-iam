@@ -18,6 +18,7 @@ class Routes {
 
         // Authentication
         const val AUTH_PATH = "/auth"
+        const val REFRESH_TOKEN_PATH = "/refresh"
 
         // Logout
         const val LOGOUT_PATH = "/logout"
@@ -26,5 +27,8 @@ class Routes {
         const val USERS_PATH = "/users"
         const val USER_INFO_PATH = "/userinfo"
         const val FIND_USERID_PATH = "/find-user-id"
+
+        // Admin
+        const val ADMIN_USERS_PATH = "/admin/users"
     }
 }

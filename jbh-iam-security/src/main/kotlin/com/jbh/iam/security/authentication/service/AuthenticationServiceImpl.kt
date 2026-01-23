@@ -18,6 +18,9 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
     @Autowired
     lateinit var tokenProvider: JwtTokenProvider
 
+    @Autowired
+    lateinit var customUserDetailsService: com.jbh.iam.security.service.CustomUserDetailsService
+
     companion object {
         val log = org.slf4j.LoggerFactory.getLogger(AuthenticationServiceImpl::class.java)
     }
@@ -40,6 +43,7 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
 
     override fun logout() {
         log.debug("Clering the security context")
+        // Only affects the current request.
         SecurityContextHolder.clearContext()
     }
 
@@ -47,5 +51,37 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
         return tokenProvider.getUserIdFromJWT(token)
     }
 
+    override fun generateAccessTokenForUser(userId: UUID): String {
+        log.info("Generating access token for user $userId")
+
+        // Load user details
+        val userDetails = customUserDetailsService.loadUserById(userId)
+
+        // Create authentication object
+        val authentication = UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.authorities
+        )
+
+        // Generate and return JWT token
+        return tokenProvider.generateToken(authentication)
+    }
+
+    override fun requireAdminRole() {
+        val authentication = SecurityContextHolder.getContext().authentication
+            ?: throw org.springframework.security.access.AccessDeniedException("User is not authenticated")
+
+        val hasAdminRole = authentication.authorities?.any {
+            it.authority == "ROLE_ADMIN"
+        } ?: false
+
+        if (!hasAdminRole) {
+            log.warn("Access denied: User does not have ADMIN role. Authorities: ${authentication.authorities}")
+            throw org.springframework.security.access.AccessDeniedException("User does not have ADMIN role")
+        }
+
+        log.info("Admin role verified for user: ${authentication.name}")
+    }
 
 }

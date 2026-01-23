@@ -1,4 +1,4 @@
-package com.jbh.iam.viewgateway
+package com.jbh.iam.api
 
 import com.jbh.iam.domain.config.IAMDomainConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication

@@ -15,35 +15,41 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(Routes.LOGOUT_PATH)
+@RequestMapping(Routes.AUTH_PATH)
 class LogOutResource(
     private val cookieService: CookieService,
-    private val authenticationOperationService: AuthenticationOperationService
+    private val authenticationOperationService: AuthenticationOperationService,
+    private val refreshTokenService: com.jbh.iam.domain.modules.user.service.RefreshTokenService
 ) {
     private val log = customLogger()
 
-    @PostMapping("")
+    @PostMapping(Routes.LOGOUT_PATH)
     fun logout(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ApiResponse> {
-        log.info("Logging out user ")
+        log.info("Logging out user")
 
-
-        // Invalidate session
-        val session = request.getSession(false)
-        with(session) {
-            try {
-                invalidate()
-            }catch (e: Exception) {
-                log.error("Error while invalidating session", e)
+        try {
+            // Get and revoke refresh token
+            val refreshToken = cookieService.getRefreshTokenFromCookie(request)
+            if (refreshToken != null) {
+                refreshTokenService.revokeToken(refreshToken)
+                log.info("Refresh token revoked")
             }
 
+            // Invalidate session
+            request.getSession(false)?.invalidate()
+
+            // Clear security context
             authenticationOperationService.logout()
 
-            // Clear the authentication cookie
+            // Clear both cookies
             cookieService.clearAuthCookie(response)
+            cookieService.clearRefreshTokenCookie(response)
 
             return ResponseEntity.ok(ApiResponse(true, "Logged out successfully"))
+        } catch (e: Exception) {
+            log.error("Error during logout", e)
+            return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                .body(ApiResponse(false, "Logout failed"))
         }
-
-        return ResponseEntity.badRequest().body(ApiResponse(false, "Why?? :("))
     }
 }

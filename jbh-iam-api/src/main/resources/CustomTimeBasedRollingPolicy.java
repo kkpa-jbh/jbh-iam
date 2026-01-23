@@ -1,4 +1,4 @@
-package com.jbh.iam.viewgateway.config.logback;
+package com.jbh.iam.api.config.logback;
 
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 

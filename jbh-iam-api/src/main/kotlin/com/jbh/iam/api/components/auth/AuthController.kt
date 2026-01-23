@@ -20,7 +20,9 @@ class AuthController(
     private val cookieService: CookieService,
     private val userAvailabilitySrv: UserAvailabilityService,
     private val userRegistrationSrv: UserRegistrationService,
-    private val authenticationOperationService: AuthenticationOperationService
+    private val authenticationOperationService: AuthenticationOperationService,
+    private val refreshTokenService: com.jbh.iam.domain.modules.user.service.RefreshTokenService,
+    private val userRepository: com.jbh.iam.domain.modules.user.repository.UserRepository
 ) {
 
     private val log = customLogger()
@@ -28,15 +30,64 @@ class AuthController(
     @PostMapping("/signin")
     fun authenticateUser(
         @RequestBody loginRequest: LoginRequest,
+        request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<JwtAuthenticationResponse> {
+        // Authenticate user and get access token
         val jwt = authenticationOperationService.authenticate(
             loginRequest.usernameOrEmail!!,
             loginRequest.password!!
         )
-        cookieService.setAuthCookie(response, jwt)
 
-        return ResponseEntity.ok<JwtAuthenticationResponse>(JwtAuthenticationResponse(jwt))
+        // Get user entity to create refresh token
+        val usernameOrEmail = loginRequest.usernameOrEmail!!
+        val user = userRepository.findByNickNameOrEmail(usernameOrEmail, usernameOrEmail)
+            ?: return ResponseEntity.status(401).body(JwtAuthenticationResponse(error = "User not found"))
+
+        // Create refresh token
+        val refreshToken = refreshTokenService.createRefreshToken(user, request)
+
+        // Set both cookies
+        cookieService.setAuthCookie(response, jwt)
+        cookieService.setRefreshTokenCookie(response, refreshToken)
+
+        return ResponseEntity.ok(JwtAuthenticationResponse(jwt, refreshToken))
+    }
+
+    @PostMapping(Routes.REFRESH_TOKEN_PATH)
+    fun refreshToken(
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<JwtAuthenticationResponse> {
+        // Get refresh token from cookie
+        val oldRefreshToken = cookieService.getRefreshTokenFromCookie(request)
+            ?: return ResponseEntity.status(401)
+                .body(JwtAuthenticationResponse(error = "Refresh token not found"))
+
+        // Validate refresh token and get user ID
+        val userId = refreshTokenService.validateAndGetUserId(oldRefreshToken)
+            ?: return ResponseEntity.status(401)
+                .body(JwtAuthenticationResponse(error = "Invalid or expired refresh token"))
+
+        // Revoke old refresh token (token rotation security practice)
+        refreshTokenService.revokeToken(oldRefreshToken)
+
+        // Get user entity to create new refresh token
+        val user = userRepository.findById(userId).orElseThrow {
+            IllegalStateException("User not found for ID: $userId")
+        }
+
+        // Create new refresh token (rotation)
+        val newRefreshToken = refreshTokenService.createRefreshToken(user, request)
+
+        // Generate new access token for the user
+        val newAccessToken = authenticationOperationService.generateAccessTokenForUser(userId)
+
+        // Set both new cookies
+        cookieService.setAuthCookie(response, newAccessToken)
+        cookieService.setRefreshTokenCookie(response, newRefreshToken)
+
+        return ResponseEntity.ok(JwtAuthenticationResponse(newAccessToken, newRefreshToken))
     }
 
     @PostMapping("/signup")

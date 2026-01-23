@@ -22,6 +22,9 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.util.*
 
 
@@ -102,11 +105,88 @@ class SecurityConfig() {
 
 
     /**
+     * Configures CORS (Cross-Origin Resource Sharing) for the application.
+     *
+     * This configuration is CRITICAL for allowing the Angular/Ionic frontend to:
+     * 1. Make cross-origin requests to the backend API
+     * 2. Send and receive cookies (JWT and refresh tokens) across origins
+     *
+     * Key settings:
+     * - allowCredentials = true: REQUIRED for cookies to work across origins
+     * - allowedOrigins: Specifies which frontend origins can access the API
+     *   - Local development: http://localhost:4200, http://localhost:8100 (Ionic)
+     *   - Production: Add your production frontend domain here
+     * - allowedMethods: HTTP methods the frontend can use
+     * - allowedHeaders: Headers the frontend can send (Authorization, Content-Type, etc.)
+     * - exposedHeaders: Headers the frontend can read from responses
+     *
+     * SECURITY NOTE: In production, replace localhost origins with your actual frontend domain
+     */
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        log.info("Configuring CORS for cross-origin cookie support")
+        val configuration = CorsConfiguration()
+
+        // Allow credentials (cookies, authorization headers) to be sent with requests
+        // This MUST be true for HttpOnly cookies to work across origins
+        configuration.allowCredentials = true
+
+        // Allowed origins: Frontend URLs that can access this API
+        // Add your production frontend domain in production environment
+        configuration.allowedOrigins = listOf(
+            "http://localhost:4200",      // Angular default dev server
+            "http://localhost:8100",      // Ionic default dev server
+            "http://127.0.0.1:4200",      // Alternative localhost notation
+            "http://127.0.0.1:8100"       // Alternative localhost notation
+            // TODO: Add production frontend domain when deploying
+            // "https://your-production-domain.com"
+        )
+
+        // Allow all standard HTTP methods
+        configuration.allowedMethods = listOf(
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS",
+            "PATCH"
+        )
+
+        // Allow all headers commonly used by frontends
+        // Including Authorization for JWT tokens sent in headers (if needed as fallback)
+        configuration.allowedHeaders = listOf(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "X-Requested-With"
+        )
+
+        // Expose headers that the frontend JavaScript can read from responses
+        configuration.exposedHeaders = listOf(
+            "Authorization",
+            "Content-Type",
+            "Set-Cookie"
+        )
+
+        // Cache preflight requests for 1 hour to reduce OPTIONS requests
+        configuration.maxAge = 3600L
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
+
+    /**
      * Configures the security filter chain for the application.
      *
      * This method sets up the main security configuration, including:
-     * CSRF (Cross-Site Request Forgery) protection
-     * This is fine for a stateless API. CSRF protection is primarily needed for session-based authentication where cookies are used to maintain state. In a stateless JWT-based system, the token itself provides protection against CSRF attacks.
+     * - CORS (Cross-Origin Resource Sharing) for Angular/Ionic frontend
+     * - CSRF (Cross-Site Request Forgery) protection (disabled for stateless JWT)
+     *   CSRF protection is primarily needed for session-based authentication.
+     *   In a stateless JWT-based system, the token itself provides protection.
      * - Applying custom authorization rules
      * - Adding a JWT authentication filter
      * - Configuring stateless session management
@@ -120,6 +200,12 @@ class SecurityConfig() {
     fun filterChain(http: HttpSecurity): SecurityFilterChain? {
         log.info("Security Filter Chain is being created")
         http
+            // Enable CORS with the configuration from corsConfigurationSource()
+            // This MUST come before other configurations to handle preflight OPTIONS requests
+            .cors { cors ->
+                cors.configurationSource(corsConfigurationSource())
+            }
+            // Disable CSRF for stateless JWT authentication
             .csrf { obj: CsrfConfigurer<HttpSecurity> -> obj.disable() }
             .authorizeHttpRequests(jbhAuthorizer)
             .addFilterAfter(

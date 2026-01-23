@@ -5,5 +5,4 @@ rootProject.name = "jbh-iam"
 include("jbh-iam-common")
 include("jbh-iam-security")
 include("jbh-iam-api")
-include("jbh-iam-view-gateway")
 include("jbh-iam-core")

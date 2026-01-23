@@ -10,8 +10,11 @@ server:
 
 # Spring Security JWT
 app:
-  jwtSecret: ${JWT_SECRET:JWTSuperSecretKey}
-  jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:604800000}
+  jwtSecret: ${JWT_SECRET:p7YH4n3B6GZC6FvJBHm9a0YzqkXyZP8vJBH1F0sYB7Q=}
+  # Short-lived access token - 15 minutes
+  jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:900000}
+  # Long-lived refresh token - 30 days
+  refreshTokenExpirationInMs: ${REFRESH_TOKEN_EXPIRATION_IN_MS:2592000000}
 
 spring:
   profiles:
@@ -60,13 +63,3 @@ spring:
     pathmatch:
       # To Fix: No more pattern data allowed after {*...} or ** pattern element
       matching-strategy: ANT_PATH_MATCHER
-  thymeleaf:
-    enabled: true
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: HTML5
-    encoding: UTF-8
-    content-type: text/html
-    servlet:
-      content-type: text/html
-    template-resolver-order: 1

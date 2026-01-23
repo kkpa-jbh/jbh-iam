@@ -1,44 +1,63 @@
 # jbh-iam
 
-Modular monolith for handling IAM in JBH.
+Modular monolith REST API for handling IAM (Identity and Access Management) in JBH.
 
 This project is designed to centralize authentication, authorization, and user management for JBH applications.
 
-It provides APIs, security, and a gateway for handling IAM concerns in a modular, maintainable way, using Kotlin, Spring Boot, and Gradle.
+It provides a pure REST API for IAM operations using Kotlin, Spring Boot, and Gradle with JWT-based authentication.
 
 The structure supports code reuse, separation of concerns, and scalability.
 
 ## Modules
 
-jbh-iam-api: Contains API endpoints, controllers, DTOs, and error handling for the IAM service. Handles HTTP requests and responses.
-jbh-iam-common: Shared code and utilities (e.g., config, extensions, logging, payloads) used across other modules.
-jbh-iam-core: Core business logic, domain models, and security/environment abstractions for IAM.
-jbh-iam-security: Handles authentication and security concerns, likely providing authentication mechanisms and security filters.
-jbh-iam-view-gateway: Acts as a gateway or frontend for the IAM system, possibly serving static resources, templates, and acting as an entry point for web clients.
+**jbh-iam-api** (Main Application): The executable Spring Boot application containing API endpoints, controllers, DTOs, domain logic, and error handling. This is the entry point that runs the IAM service.
+
+**jbh-iam-common**: Shared code and utilities (e.g., config, extensions, logging, payloads) used across other modules.
+
+**jbh-iam-core**: Core business logic, domain models, and security/environment abstractions for IAM.
+
+**jbh-iam-security**: Handles authentication and security concerns, providing JWT authentication mechanisms and security filters.
 
 # How to use it?
 
-🌐 Server Configuration:
-- Port: 9999 (configurable via INSTANCE_PORT env var)
-- Context Path: /jbh (configurable via INSTANCE_CONTEXT_PATH env var)
-- Base URL: http://localhost:9999/jbh
+## Server Configuration
+- Port: 9999 (configurable via `INSTANCE_PORT` env var)
+- Context Path: `/` (configurable via `INSTANCE_CONTEXT_PATH` env var)
+- Base URL: http://localhost:9999
 
-📄 Available HTML Pages:
-1. Login Page: /view/auth/login
-   - Full URL: http://localhost:9999/jbh/view/auth/login
-   - Template: auth/login.html
-2. Register Page: /view/auth/register
-   - Full URL: http://localhost:9999/jbh/view/auth/register
-   - Template: auth/register.html
-3. Test Page: /test (likely)
-   - Full URL: http://localhost:9999/jbh/test
-   - Template: test.html
+## Running the Application
+```bash
+# Using Gradle
+./gradlew bootRun
 
-🔧 Additional Endpoints:
-- Username availability check: /view/auth/check-username?username=...
-- Email availability check: /view/auth/check-email?email=...
-- Login POST: /view/auth/signin
-- Register POST: /view/auth/register
+# Or build and run the JAR
+./gradlew build
+java -jar jbh-iam-api/build/libs/jbh-iam-api-0.0.1-SNAPSHOT.jar
+```
 
-🚀 To access your app:
-Start the application and navigate to http://localhost:9999/jbh/view/auth/login for the login page.
+## API Endpoints
+
+### Authentication Endpoints (`/jbh-api/auth`)
+- `POST /jbh-api/auth/signin` - User authentication
+- `POST /jbh-api/auth/signup` - User registration
+- `GET /jbh-api/auth/checkUsernameAvailability?username=...` - Check username availability
+- `GET /jbh-api/auth/checkEmailAvailability?email=...` - Check email availability
+
+### User Endpoints (`/jbh-api/users`)
+- `GET /jbh-api/users/{nickName}` - Get user profile by nickname
+- `GET /jbh-api/users` - Get all users
+- `GET /jbh-api/users/userinfo` - Get authenticated user info (requires JWT token)
+- `GET /jbh-api/users/find-user-id` - Get user ID from JWT token
+
+### Logout Endpoint
+- `POST /jbh-api/logout` - Logout and invalidate session
+
+## Environment Variables
+- `INSTANCE_PORT`: Server port (default: 9999)
+- `INSTANCE_CONTEXT_PATH`: Application context path (default: `/`)
+- `INSTANCE_HOSTNAME`: Hostname (default: localhost)
+- `DB_NAME`: Database name (default: jbh)
+- `JBH_ADMIN_PASS`: Database password
+- `JWT_SECRET`: JWT signing secret (default: JWTSuperSecretKey)
+- `JWT_EXPIRATION_IN_MS`: Token expiration time in milliseconds (default: 604800000 = 7 days)
+- `CONSUL_PORT`: Consul service discovery port (default: 8500)
