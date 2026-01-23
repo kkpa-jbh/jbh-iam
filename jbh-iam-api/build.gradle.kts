@@ -22,7 +22,6 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:${property("postgresqlVersion")}")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.hibernate:hibernate-core:6.1.7.Final")
 
     // Web and API
     implementation("org.springframework.boot:spring-boot-starter-web")
