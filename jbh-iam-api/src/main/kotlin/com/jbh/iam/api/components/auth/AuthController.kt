@@ -59,6 +59,7 @@ class AuthController(
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<JwtAuthenticationResponse> {
+
         // Get refresh token from cookie
         val oldRefreshToken = cookieService.getRefreshTokenFromCookie(request)
             ?: return ResponseEntity.status(401)
@@ -69,6 +70,7 @@ class AuthController(
             ?: return ResponseEntity.status(401)
                 .body(JwtAuthenticationResponse(error = "Invalid or expired refresh token"))
 
+        log.info("Refreshing Token  $userId " )
         // Revoke old refresh token (token rotation security practice)
         refreshTokenService.revokeToken(oldRefreshToken)
 
@@ -87,12 +89,14 @@ class AuthController(
         cookieService.setAuthCookie(response, newAccessToken)
         cookieService.setRefreshTokenCookie(response, newRefreshToken)
 
+        log.info("Token has been refreshed ")
+
         return ResponseEntity.ok(JwtAuthenticationResponse(newAccessToken, newRefreshToken))
     }
 
     @PostMapping("/signup")
     fun registerUser(@RequestBody signUpRequest: SignUpRequest): ResponseEntity<*> {
-        log.debug("Registering user")
+        log.info("Registering user ${signUpRequest}")
 
         try {
             userRegistrationSrv.registerUser(signUpRequest)

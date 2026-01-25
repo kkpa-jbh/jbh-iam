@@ -49,7 +49,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         val isPublicEndpoint = isPublicEndpoint(uri)
         val isStaticResource = isStaticResource(uri)
         val isPublicPage = isPublicPage(uri)
-        logger.info("Analyzing URI ${uri} PublicAPI: $isPublicEndpoint - StaticResource: $isStaticResource - PublicPage: $isPublicPage")
+        logger.debug("Analyzing URI ${uri} PublicAPI: $isPublicEndpoint - StaticResource: $isStaticResource - PublicPage: $isPublicPage")
         if (!isPublicEndpoint && !isStaticResource && !isPublicPage) {
             try {
                 tokenProvider.findJWTFromRequest(request)?.let {
@@ -61,7 +61,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
                 throw IllegalArgumentException("Request not valid")
             }
         }
-        logger.info("Do Filter ${filterChain} - ${request}")
+        logger.debug("Do Filter ${filterChain} - ${request}")
         filterChain.doFilter(request, response)
     }
 

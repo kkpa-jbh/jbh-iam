@@ -27,7 +27,6 @@ class UserDataAccess : IUserDataAccess {
     }
 
     override fun findByUserId(id: UUID): UserCore {
-        log.info("loading user by ownerId... ")
         val user = userService.findById(id)
 
         log.info("loading user by ownerId... User Found! ${user.nickName}")
