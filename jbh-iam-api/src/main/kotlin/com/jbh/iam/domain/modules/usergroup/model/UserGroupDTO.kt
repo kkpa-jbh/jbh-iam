@@ -11,16 +11,17 @@ import java.util.*
 data class UserGroupDTO(
     @JsonIgnore
     val id: UUID? = null,
-    val name: String = DefaultValues.EMPTY_STRING,
     val shortName: String = DefaultValues.EMPTY_STRING,
-
-    ) : JbhDTO, DomainConverter<UserGroupDTO, UsersGroupEntity> {
+    val name: String = DefaultValues.EMPTY_STRING,
+    val createdBy: UUID? = null
+) : JbhDTO, DomainConverter<UserGroupDTO, UsersGroupEntity> {
 
     override fun toDomain(): UsersGroupEntity {
         return UsersGroupEntity(
-            this.id,
+            id = this.id,
+            shortName = this.shortName,
             name = this.name,
-            shortName = this.shortName
+            createdBy = this.createdBy
         )
     }
 }

@@ -27,7 +27,6 @@ open class UsersGroupEntity(
     @get:NotBlank(message = "User Group short_name is required")
     val shortName: String = DefaultValues.EMPTY_STRING,
 
-
     @Column(name = "NAME")
     @get:NotBlank(message = "User Group nickName is required")
     @get:Size(
@@ -37,13 +36,17 @@ open class UsersGroupEntity(
     )
     val name: String = DefaultValues.EMPTY_STRING,
 
+    @Column(name = "created_by")
+    val createdBy: UUID? = null
 
-    ) : AuditModel(), DTOConverter<UserGroupDTO, UsersGroupEntity> {
+) : AuditModel(), DTOConverter<UserGroupDTO, UsersGroupEntity> {
 
     override fun toDTO(): UserGroupDTO {
         return UserGroupDTO(
-            this.id,
-            this.name,
+            id = this.id,
+            shortName = this.shortName,
+            name = this.name,
+            createdBy = this.createdBy
         )
     }
 }
