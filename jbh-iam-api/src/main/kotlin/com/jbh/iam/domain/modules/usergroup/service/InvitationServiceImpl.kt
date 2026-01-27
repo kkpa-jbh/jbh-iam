@@ -11,7 +11,8 @@ import java.util.*
 @Transactional
 class InvitationServiceImpl(
     private val userRepository: UserRepository,
-    private val membershipService: IUserGroupMembershipService
+    private val membershipService: IUserGroupMembershipService,
+    private val notificationService: IInvitationNotificationService
 ) : IInvitationService {
 
     private val log = customLogger()
@@ -30,6 +31,24 @@ class InvitationServiceImpl(
             ?: throw IllegalStateException("User found but has no ID")
 
         return membershipService.inviteUser(groupId, targetUserId, invitedByUserId)
+    }
+
+    override fun reinviteUserByEmailOrUsername(
+        groupId: UUID,
+        emailOrUsername: String,
+        invitedByUserId: UUID
+    ): UserGroupMembershipEntity {
+        log.info("Reinviting user with emailOrUsername=$emailOrUsername to group $groupId by user $invitedByUserId")
+
+        val targetUser = userRepository.findByNickNameOrEmail(emailOrUsername, emailOrUsername)
+            ?: throw IllegalArgumentException("User not found with email or username: $emailOrUsername")
+
+        val targetUserId = targetUser.id
+            ?: throw IllegalStateException("User found but has no ID")
+
+        val membership = membershipService.validateReinvite(groupId, targetUserId, invitedByUserId)
+        notificationService.sendReinviteNotification(groupId, targetUserId, invitedByUserId)
+        return membership
     }
 
     override fun acceptInvitation(groupId: UUID, userId: UUID): UserGroupMembershipEntity {

@@ -12,6 +12,7 @@ interface IUserGroupMembershipService {
     fun isAcceptedMember(groupId: UUID, userId: UUID): Boolean
 
     fun inviteUser(groupId: UUID, targetUserId: UUID, invitedByUserId: UUID): UserGroupMembershipEntity
+    fun validateReinvite(groupId: UUID, targetUserId: UUID, invitedByUserId: UUID): UserGroupMembershipEntity
     fun acceptInvitation(groupId: UUID, userId: UUID): UserGroupMembershipEntity
     fun declineInvitation(groupId: UUID, userId: UUID): UserGroupMembershipEntity
     fun findPendingInvitationsByUserId(userId: UUID): List<UserGroupMembershipEntity>

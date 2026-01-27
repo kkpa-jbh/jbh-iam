@@ -1,5 +1,7 @@
 package com.jbh.iam.domain.modules.usergroup.service
 
+import com.jbh.iam.api.exceptions.IAMApiExceptionType
+import com.jbh.iam.common.exceptions.BusinessException
 import com.jbh.iam.common.logging.customLogger
 import com.jbh.iam.domain.modules.usergroup.model.InvitationStatus
 import com.jbh.iam.domain.modules.usergroup.model.UserGroupMembershipEntity
@@ -22,7 +24,7 @@ class UserGroupMembershipServiceImpl(
         log.info("Adding user $userId to group $groupId")
 
         if (membershipRepository.existsByIdGroupIdAndIdUserId(groupId, userId)) {
-            throw IllegalArgumentException("User $userId is already a member of group $groupId")
+            throw BusinessException(IAMApiExceptionType.USER_ALREADY_MEMBER, userId, groupId)
         }
 
         val membership = UserGroupMembershipEntity(groupId = groupId, userId = userId, status = InvitationStatus.ACCEPTED)
@@ -34,7 +36,7 @@ class UserGroupMembershipServiceImpl(
 
         val membershipId = UserGroupMembershipId(groupId = groupId, userId = userId)
         if (!membershipRepository.existsById(membershipId)) {
-            throw IllegalArgumentException("User $userId is not a member of group $groupId")
+            throw BusinessException(IAMApiExceptionType.USER_NOT_MEMBER, userId, groupId)
         }
 
         membershipRepository.deleteById(membershipId)
@@ -60,11 +62,11 @@ class UserGroupMembershipServiceImpl(
         log.info("User $invitedByUserId inviting user $targetUserId to group $groupId")
 
         if (!isAcceptedMember(groupId, invitedByUserId)) {
-            throw IllegalArgumentException("User $invitedByUserId is not an accepted member of group $groupId and cannot invite others")
+            throw BusinessException(IAMApiExceptionType.USER_NOT_ACCEPTED_MEMBER, invitedByUserId, groupId)
         }
 
         if (membershipRepository.existsByIdGroupIdAndIdUserId(groupId, targetUserId)) {
-            throw IllegalArgumentException("User $targetUserId already has a membership record for group $groupId")
+            throw BusinessException(IAMApiExceptionType.USER_ALREADY_HAS_MEMBERSHIP, targetUserId, groupId)
         }
 
         val invitation = UserGroupMembershipEntity(
@@ -75,14 +77,31 @@ class UserGroupMembershipServiceImpl(
         return membershipRepository.save(invitation)
     }
 
+    override fun validateReinvite(groupId: UUID, targetUserId: UUID, invitedByUserId: UUID): UserGroupMembershipEntity {
+        log.info("User $invitedByUserId reinviting user $targetUserId to group $groupId")
+
+        if (!isAcceptedMember(groupId, invitedByUserId)) {
+            throw BusinessException(IAMApiExceptionType.USER_NOT_ACCEPTED_MEMBER, invitedByUserId, groupId)
+        }
+
+        val membership = membershipRepository.findByIdGroupIdAndIdUserId(groupId, targetUserId)
+            ?: throw BusinessException(IAMApiExceptionType.NO_INVITATION_FOUND, targetUserId, groupId)
+
+        if (membership.status != InvitationStatus.PENDING_TO_ACCEPT) {
+            throw BusinessException(IAMApiExceptionType.INVITATION_NOT_PENDING, membership.status)
+        }
+
+        return membership
+    }
+
     override fun acceptInvitation(groupId: UUID, userId: UUID): UserGroupMembershipEntity {
         log.info("User $userId accepting invitation to group $groupId")
 
         val membership = membershipRepository.findByIdGroupIdAndIdUserId(groupId, userId)
-            ?: throw IllegalArgumentException("No invitation found for user $userId in group $groupId")
+            ?: throw BusinessException(IAMApiExceptionType.NO_INVITATION_FOUND, userId, groupId)
 
         if (membership.status != InvitationStatus.PENDING_TO_ACCEPT) {
-            throw IllegalArgumentException("Invitation is not pending. Current status: ${membership.status}")
+            throw BusinessException(IAMApiExceptionType.INVITATION_NOT_PENDING, membership.status)
         }
 
         membership.status = InvitationStatus.ACCEPTED
@@ -94,10 +113,10 @@ class UserGroupMembershipServiceImpl(
         log.info("User $userId declining invitation to group $groupId")
 
         val membership = membershipRepository.findByIdGroupIdAndIdUserId(groupId, userId)
-            ?: throw IllegalArgumentException("No invitation found for user $userId in group $groupId")
+            ?: throw BusinessException(IAMApiExceptionType.NO_INVITATION_FOUND, userId, groupId)
 
         if (membership.status != InvitationStatus.PENDING_TO_ACCEPT) {
-            throw IllegalArgumentException("Invitation is not pending. Current status: ${membership.status}")
+            throw BusinessException(IAMApiExceptionType.INVITATION_NOT_PENDING, membership.status)
         }
 
         membership.status = InvitationStatus.DECLINED

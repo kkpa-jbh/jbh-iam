@@ -74,6 +74,20 @@ class UserGroupController(
         return ResponseEntity.status(HttpStatus.CREATED).body(invitation.toInvitationResponse())
     }
 
+    @PostMapping("/{groupId}/reinvite")
+    fun reinviteUser(
+        @PathVariable groupId: UUID,
+        @Valid @RequestBody request: InvitationRequest,
+        @RequestHeader("Authorization") authHeader: String
+    ): ResponseEntity<InvitationResponse> {
+        val token = authHeader.substringAfter("Bearer ")
+        val invitedByUserId = authenticationOperationService.getUserIdFromJWT(token)
+            ?: throw IllegalStateException("User ID not found in token")
+
+        val invitation = invitationService.reinviteUserByEmailOrUsername(groupId, request.emailOrUsername, invitedByUserId)
+        return ResponseEntity.ok(invitation.toInvitationResponse())
+    }
+
     @PostMapping("/{groupId}/invitations/accept")
     fun acceptInvitation(
         @PathVariable groupId: UUID,

@@ -1,6 +1,7 @@
 package com.jbh.iam.api
 
 import com.jbh.iam.api.exceptions.ConstraintViolationsException
+import com.jbh.iam.common.exceptions.BusinessException
 import com.jbh.iam.common.payload.ErrorMessageResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -27,6 +28,16 @@ class GlobalErrorHandler {
         }.joinToString(separator = " - ")
 
         return ResponseEntity.badRequest().body(ErrorMessageResponse(messageResponse))
+    }
+
+    @ExceptionHandler(BusinessException::class)
+    @ResponseBody
+    fun businessExceptionHandler(
+        ex: BusinessException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+            .body(ErrorMessageResponse(ex.message ?: ex.businessExceptionType.message))
     }
 
     @ExceptionHandler(Throwable::class)
