@@ -3,6 +3,7 @@ package com.jbh.iam.domain.modules.usergroup.service
 import com.jbh.iam.api.exceptions.IAMApiExceptionType
 import com.jbh.iam.common.exceptions.BusinessException
 import com.jbh.iam.common.logging.customLogger
+import com.jbh.iam.domain.modules.user.model.InternalUserDTO
 import com.jbh.iam.domain.modules.usergroup.model.InvitationStatus
 import com.jbh.iam.domain.modules.usergroup.model.UserGroupMembershipEntity
 import com.jbh.iam.domain.modules.usergroup.model.UserGroupMembershipId
@@ -94,6 +95,15 @@ class UserGroupMembershipServiceImpl(
         return membership
     }
 
+    /**
+     *  The page handles these error scenarios:
+     *   - 404: Invitation not found (revoked or
+     *   already used)
+     *   - 409: User is already a member
+     *   - 410: Invitation expired
+     *   - Generic errors: Fallback message with
+     *   helpful tips
+     */
     override fun acceptInvitation(groupId: UUID, userId: UUID): UserGroupMembershipEntity {
         log.info("User $userId accepting invitation to group $groupId")
 

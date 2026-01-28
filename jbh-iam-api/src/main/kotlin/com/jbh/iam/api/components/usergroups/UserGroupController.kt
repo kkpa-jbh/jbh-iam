@@ -70,7 +70,9 @@ class UserGroupController(
         val invitedByUserId = authenticationOperationService.getUserIdFromJWT(token)
             ?: throw IllegalStateException("User ID not found in token")
 
-        val invitation = invitationService.inviteUserByEmailOrUsername(groupId, request.emailOrUsername, invitedByUserId)
+        val enrichedRequest = request.copy( teamID = groupId)
+
+        val invitation = invitationService.inviteUserByEmailOrUsername(groupId, enrichedRequest, invitedByUserId, authHeader)
         return ResponseEntity.status(HttpStatus.CREATED).body(invitation.toInvitationResponse())
     }
 

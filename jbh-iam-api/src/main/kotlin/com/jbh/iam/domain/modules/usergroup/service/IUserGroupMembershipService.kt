@@ -1,5 +1,6 @@
 package com.jbh.iam.domain.modules.usergroup.service
 
+import com.jbh.iam.domain.modules.user.model.InternalUserDTO
 import com.jbh.iam.domain.modules.usergroup.model.UserGroupMembershipEntity
 import java.util.*
 

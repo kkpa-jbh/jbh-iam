@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-interface IUserDataAccess {
+interface IUserDataAccessService {
     fun findByNickNameOrEmail(nickName: String, email: String): UserCore?
 
     fun findByUserId(id: UUID): UserCore?

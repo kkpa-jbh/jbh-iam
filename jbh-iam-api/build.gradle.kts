@@ -18,6 +18,9 @@ dependencies {
     implementation(project(":jbh-iam-core"))
     implementation(project(":jbh-iam-security"))
 
+    // JBH Modules
+    implementation("com.jbh:jbh-gateway-client:1.0.0-SNAPSHOT")
+
     // Database and migration
     implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql:${property("postgresqlVersion")}")
