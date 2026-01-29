@@ -1,9 +1,8 @@
 package com.jbh.iam.domain.modules.usergroup.service
 
 import com.jbh.iam.api.dto.toDTOList
-import com.jbh.iam.api.services.users.UserServiceImpl
+import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.domain.modules.common.CrudService
-import com.jbh.iam.domain.modules.user.repository.UserRepository
 import com.jbh.iam.domain.modules.usergroup.model.*
 import com.jbh.iam.domain.modules.usergroup.repository.UserGroupRepository
 import org.springframework.stereotype.Service
@@ -14,8 +13,7 @@ import java.util.*
 @Transactional
 class UserGroupServiceImpl(
     private val userGroupRepository: UserGroupRepository,
-    private val userRepository: UserRepository,
-    private val userService: UserServiceImpl,
+    private val userService: UserService,
     private val membershipService: IUserGroupMembershipService
 ) : CrudService<UserGroupDTO>(), IUserGroupService {
 
@@ -128,7 +126,7 @@ class UserGroupServiceImpl(
         return groups.map { group ->
             val memberships = membershipService.findMembersByGroupId(group.id!!)
             val userIds = memberships.map { it.id.userId }
-            val users = userRepository.findAllById(userIds).associateBy { it.id }
+            val users = userService.findAllByIds(userIds).associateBy { it.id }
 
             val members = memberships.mapNotNull { membership ->
                 val user = users[membership.id.userId]
@@ -151,6 +149,13 @@ class UserGroupServiceImpl(
                 updatedAt = group.updatedAt,
                 members = members
             )
+        }
+    }
+
+    override fun removeMemberFromGroup(groupId: UUID, userEmail: String) {
+        log.info("Removing $userEmail from group ")
+        userService.findByEmail(userEmail).apply {
+            membershipService.removeMember(groupId, this.id)
         }
     }
 }

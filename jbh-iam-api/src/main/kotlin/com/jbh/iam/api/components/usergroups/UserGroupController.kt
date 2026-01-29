@@ -147,4 +147,12 @@ class UserGroupController(
         val groups = userGroupService.findGroupsWithMembersByUserId(userId)
         return ResponseEntity.ok(groups)
     }
+
+    @DeleteMapping("/{groupId}/members/{userEmail}")
+    fun removeMemberFromGroup(@PathVariable groupId: UUID,
+                              @PathVariable email: String,
+                              @RequestHeader("Authorization") authHeader: String): ResponseEntity<Boolean> {
+        userGroupService.removeMemberFromGroup(groupId, email)
+        return ResponseEntity.ok(true)
+    }
 }

@@ -42,7 +42,8 @@ class GlobalErrorHandler {
 
     @ExceptionHandler(Throwable::class)
     fun throwableHandler(ex: Throwable): ResponseEntity<ErrorMessageResponse> {
-        log.error("An exception not caught: ${ex.message} ${ex.stackTrace}")
+        ex.printStackTrace();
+        log.error("An exception not caught: ${ex.message} ")
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorMessageResponse("Working to fix this error. Be patience!"))

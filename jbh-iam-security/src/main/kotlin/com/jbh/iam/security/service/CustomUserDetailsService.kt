@@ -36,11 +36,11 @@ class CustomUserDetailsService : UserDetailsService {
      * It's used by Spring Security when the user try to login.
      */
     override fun loadUserByUsername(userNameOrEmail: String): UserDetails {
-        log.info("loading user by userName...  ${userNameOrEmail}")
+        log.debug("loading user by userName...  ${userNameOrEmail}")
         val user = userDataAccess.findByNickNameOrEmail(userNameOrEmail, userNameOrEmail)
             ?: throw UsernameNotFoundException("User not found with username or email $userNameOrEmail")
 
-        log.info("loading user by userName... User Found! ${user.nickName}  ${user.email}")
+        log.debug("loading user by userName... User Found! ${user.nickName}  ${user.email}")
 
         return UserPrincipal.create(user)
     }
@@ -50,12 +50,10 @@ class CustomUserDetailsService : UserDetailsService {
      * This method is used by JWTAuthenticationFilter.
      */
     fun loadUserById(id: UUID): UserDetails {
-        log.info("Loading User by Id... ${id}")
+        log.debug("Loading User by Id... ${id}")
         val user = userDataAccess.findByUserId(id)
             ?: throw UsernameNotFoundException("User not found with id : " + id!!)
 
-        log.error("FIX ME! ")
-        log.info("Loading User by Id... User Found! ${UserPrincipal.create(user)}")
         return UserPrincipal.create(user)
     }
 }

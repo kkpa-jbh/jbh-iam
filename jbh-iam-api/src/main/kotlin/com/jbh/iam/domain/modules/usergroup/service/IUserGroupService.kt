@@ -14,4 +14,5 @@ interface IUserGroupService {
     fun findAllEntities(): List<UsersGroupEntity>
     fun findGroupsByUserId(userId: UUID): List<UsersGroupEntity>
     fun findGroupsWithMembersByUserId(userId: UUID): List<UserGroupWithMembersResponse>
+    fun removeMemberFromGroup(groupId: UUID, userEmail: String)
 }

@@ -93,6 +93,19 @@ class UserServiceImpl(
         }
     }
 
+    override fun findByEmail(email: String): InternalUserDTO {
+       val user =  userRepository.findByEmail(email)
+           ?: throw java.lang.IllegalArgumentException(" User not found with email $email")
+
+        return user.toInternalUserDTO()
+    }
+
+    override fun findAllByIds(ids: List<UUID>): List<InternalUserDTO> {
+        log.info("Find ALl By Ids ${ids}")
+       return userRepository.findAllById(ids).parallelStream()
+           .map { it.toInternalUserDTO() }.toList()
+    }
+
     override fun existsByNickName(nickName: String): Boolean {
         return userRepository.existsByNickName(nickName)
     }
@@ -104,7 +117,6 @@ class UserServiceImpl(
     override fun findByNickNameOrEmail(nickName: String, email: String): InternalUserDTO {
         val user = userRepository.findByNickNameOrEmail(nickName, email)
             ?: throw IllegalArgumentException("User not found with username or email $email")
-        log.info("loading user by userName... User Found! ${user.nickName}")
 
         return user.toInternalUserDTO()
     }

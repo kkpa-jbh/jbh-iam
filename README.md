@@ -33,6 +33,9 @@ The structure supports code reuse, separation of concerns, and scalability.
 # Or build and run the JAR
 ./gradlew build
 java -jar jbh-iam-api/build/libs/jbh-iam-api-0.0.1-SNAPSHOT.jar
+
+
+  cd /Users/cristianpena/cpena/sw/github/kkpa-jbh/jbh-iam && ./gradlew compileKotlin   
 ```
 
 ## API Endpoints

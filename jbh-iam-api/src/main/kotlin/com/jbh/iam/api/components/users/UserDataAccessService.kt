@@ -20,16 +20,13 @@ class UserDataAccessService : IUserDataAccessService {
     }
 
     override fun findByNickNameOrEmail(nickName: String, email: String): UserCore {
-        log.info("loading user by nickName or email... ")
         val user = userService.findByNickNameOrEmail(nickName, email)
-        log.info("loading user by userName... User Found! ${user.nickName}")
+        log.debug("loading user by userName... User Found! ${user.nickName}")
         return user.toUserCore()
     }
 
     override fun findByUserId(id: UUID): UserCore {
         val user = userService.findById(id)
-
-        log.info("loading user by ownerId... User Found! ${user.nickName}")
         return user.toUserCore()
     }
 }

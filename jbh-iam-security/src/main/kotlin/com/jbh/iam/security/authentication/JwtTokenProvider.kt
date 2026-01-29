@@ -50,7 +50,7 @@ class JwtTokenProvider {
     }
 
     fun getUserIdFromJWT(token: String): UUID? {
-        log.info("Getting User Id from JWT...")
+        log.debug("Getting User Id from JWT...")
         val claims = Jwts.parser()
             .setSigningKey(jwtSecret)
             .parseClaimsJws(token)
@@ -60,7 +60,7 @@ class JwtTokenProvider {
     }
 
     fun validateToken(authToken: String): Boolean {
-        log.info("Validating JWT Token...")
+        log.debug("Validating JWT Token...")
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken)
             return true
@@ -80,7 +80,7 @@ class JwtTokenProvider {
     }
 
     fun findJWTFromRequest(request: HttpServletRequest): String? {
-        log.info("Getting JWT from request")
+        log.debug("Getting JWT from request")
 
         var jwt = getJwtFromRequest(request)
         if (jwt.isBlank()) {
@@ -103,7 +103,7 @@ class JwtTokenProvider {
     }
 //TODO Check the expiration of the JWT
     private fun getJwtFromRequest(request: HttpServletRequest): String {
-        log.info("Getting JWT from request")
+        log.debug("Getting JWT from request")
         val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
         if (bearerToken == null) {
             log.debug("Authorization header is missing in the request for URI: ${request.requestURI}")

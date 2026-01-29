@@ -53,7 +53,6 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
         if (!isPublicEndpoint && !isStaticResource && !isPublicPage) {
             try {
                 tokenProvider.findJWTFromRequest(request)?.let {
-                    logger.info("JWT from cookie: $it")
                     authenticateUserByJwt(request, it)
                 }
             } catch (ex: Exception) {
@@ -66,7 +65,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     }
 
     private fun authenticateUserByJwt(request: HttpServletRequest, jwt: String) {
-        logger.info("Authenticating user by JWT")
+        logger.debug("Authenticating user by JWT")
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             val userId = tokenProvider.getUserIdFromJWT(jwt)
             val userDetails = customUserDetailsService.loadUserById(userId!!)
