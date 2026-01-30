@@ -20,10 +20,12 @@ class InvitationServiceImpl(
 
     override fun inviteUserByEmailOrUsername(
         groupId: UUID,
-        invitationRequest: InvitationRequest,
+        request: InvitationRequest,
         invitedByUserId: UUID,
         token: String
     ): UserGroupMembershipEntity {
+        val invitationRequest = request.copy( teamID = groupId)
+
         val emailOrUsername = invitationRequest.emailOrUsername
 
         log.info("Inviting user with emailOrUsername=$emailOrUsername to group $groupId by user $invitedByUserId")
@@ -45,9 +47,13 @@ class InvitationServiceImpl(
 
     override fun reinviteUserByEmailOrUsername(
         groupId: UUID,
-        emailOrUsername: String,
-        invitedByUserId: UUID
+        request: InvitationRequest,
+        invitedByUserId: UUID,
+        token: String
     ): UserGroupMembershipEntity {
+        val invitationRequest = request.copy( teamID = groupId)
+
+        val emailOrUsername = invitationRequest.emailOrUsername
         log.info("Reinviting user with emailOrUsername=$emailOrUsername to group $groupId by user $invitedByUserId")
 
         val targetUser = userService.findByNickNameOrEmail(emailOrUsername, emailOrUsername)
