@@ -150,9 +150,9 @@ class UserGroupController(
 
     @DeleteMapping("/{groupId}/members/{userEmail}")
     fun removeMemberFromGroup(@PathVariable groupId: UUID,
-                              @PathVariable email: String,
+                              @PathVariable userEmail: String,
                               @RequestHeader("Authorization") authHeader: String): ResponseEntity<Boolean> {
-        userGroupService.removeMemberFromGroup(groupId, email)
+        userGroupService.removeMemberFromGroup(groupId, userEmail)
         return ResponseEntity.ok(true)
     }
 }

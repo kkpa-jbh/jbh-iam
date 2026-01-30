@@ -101,9 +101,7 @@ class UserServiceImpl(
     }
 
     override fun findAllByIds(ids: List<UUID>): List<InternalUserDTO> {
-        log.info("Find ALl By Ids ${ids}")
-       return userRepository.findAllById(ids).parallelStream()
-           .map { it.toInternalUserDTO() }.toList()
+        return userRepository.findAllById(ids).map { it.toInternalUserDTO() }
     }
 
     override fun existsByNickName(nickName: String): Boolean {

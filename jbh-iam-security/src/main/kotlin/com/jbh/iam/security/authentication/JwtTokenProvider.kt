@@ -34,11 +34,11 @@ class JwtTokenProvider {
         log.info("Generating JWT Token... Expiration in ${jwtExpirationInMs} ms Secret is ${jwtSecret}")
         val userPrincipal: UserPrincipal = authentication.getPrincipal() as UserPrincipal
 
-        log.info("User Principal is ${userPrincipal}")
+        log.info("User Principal Email: ${userPrincipal.email} NickName:${userPrincipal.username}")
         val now = Instant.now()
         val expiryDate = now.plusMillis(jwtExpirationInMs)
 
-        log.info("Signature Algorith changed!")
+        log.debug("Signature Algorith changed!")
 
         return Jwts.builder()
             .setSubject(userPrincipal.id.toString())

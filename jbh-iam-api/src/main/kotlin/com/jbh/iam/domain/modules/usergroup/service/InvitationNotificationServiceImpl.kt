@@ -51,7 +51,10 @@ class InvitationNotificationServiceImpl(private val gatewayClientFactory: Gatewa
         try {
             val httpResponse = gatewayClientFactory.getNotificationClient()
                 .sendNotification(request, NotificationType.EMAIL, headers)
-            log.info("Result HTTP Response: $httpResponse")
+            if (!httpResponse.isSuccessful) {
+                log.error("Error sending the invitation: $httpResponse")
+            }
+
         } catch (e: Exception) {
             log.error("Failed to send notification for user ${targetUser.id}", e)
         }
