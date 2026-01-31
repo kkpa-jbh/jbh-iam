@@ -8,7 +8,6 @@ import com.jbh.iam.core.model.RoleName
 import com.jbh.iam.core.security.IPasswordEncoder
 import com.jbh.iam.domain.modules.user.model.UserEntity
 import com.jbh.iam.domain.modules.user.repository.RoleRepository
-import com.jbh.iam.domain.modules.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,7 +16,6 @@ import java.util.*
 class UserRegistrationService(
     private val userService: UserService,
     private val roleRepository: RoleRepository,
-    private val userRepository: UserRepository,
     @Qualifier("jbhPasswordEncoder") private val jbhPasswordEncoder: IPasswordEncoder
 ) {
 
@@ -48,7 +46,7 @@ class UserRegistrationService(
 
         user.roles = (Collections.singleton(userRole))
 
-        userRepository.save(user)
+        userService.save(user)
         return "true"
     }
 

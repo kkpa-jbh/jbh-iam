@@ -38,10 +38,10 @@ class UserServiceImpl(
         }
     }
 
-    fun saveOperation(userDTO: InternalUserDTO): InternalUserDTO {
-        log.warn("Verifying Password...")
-        var userToSave = userDTO.toDomain();
-        return userRepository.save(userToSave).toInternalUserDTO()
+    override fun save(userDomain: UserEntity): InternalUserDTO {
+        log.info("Persisting user...${userDomain.nickName}")
+        validateUpdateOperation(userDomain.toInternalUserDTO())
+        return userRepository.save(userDomain).toInternalUserDTO()
     }
 
     fun validateUpdateOperation(dto: InternalUserDTO) {

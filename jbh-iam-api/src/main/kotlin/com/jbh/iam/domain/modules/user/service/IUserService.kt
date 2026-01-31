@@ -1,6 +1,7 @@
 package com.jbh.iam.api.services.users
 
 import com.jbh.iam.domain.modules.user.model.InternalUserDTO
+import com.jbh.iam.domain.modules.user.model.UserEntity
 import java.util.*
 
 interface UserService {
@@ -18,5 +19,6 @@ interface UserService {
 
     fun findAllByIds(ids:  List<UUID>) : List<InternalUserDTO>
 
+    fun save(userDomain: UserEntity): InternalUserDTO
 
 }
