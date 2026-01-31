@@ -30,6 +30,7 @@ class Routes {
 
         // Admin
         const val ADMIN_USERS_PATH = "/admin/users"
+        const val ADMIN_CACHE_PATH = "/admin/cache"
 
         // User Groups
         const val USER_GROUPS_PATH = "/user-groups"

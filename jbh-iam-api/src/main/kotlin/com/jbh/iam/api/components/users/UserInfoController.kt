@@ -25,6 +25,7 @@ class UserInfoController(
 
     @GetMapping(Routes.USER_INFO_PATH)
     fun getUserInfo(@RequestHeader("Authorization") authHeader: String): ResponseEntity<PublicUserInfo> {
+        log.info("Getting user info")
         val token = authHeader.substringAfter("Bearer ")
         val userId = authenticationSrv.getUserIdFromJWT(token)
         userId?.let {

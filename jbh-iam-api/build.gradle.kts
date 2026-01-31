@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":jbh-iam-common"))
     implementation(project(":jbh-iam-core"))
     implementation(project(":jbh-iam-security"))
+    implementation(project(":jbh-iam-cache"))
 
     // JBH Modules
     implementation("com.jbh:jbh-gateway-client:1.0.0-SNAPSHOT")
