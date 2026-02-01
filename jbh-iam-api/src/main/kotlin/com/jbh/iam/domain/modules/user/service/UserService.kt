@@ -81,7 +81,7 @@ class UserServiceImpl(
         dto?.also {
             try {
                 userRepository.deleteById(dto.id!!)
-                userCache.evictUser(dto.id, dto.email, dto.nickName)
+                userCache.deleteUser(dto.id, dto.email, dto.nickName)
                 log.info("User deleted and evicted from cache - id: {}, nickName: {}", dto.id, dto.nickName)
                 return true
             } catch (enf: Exception) {

@@ -8,5 +8,6 @@ interface UserCacheOperations : CacheAdapter<UUID, CachedUserDTO> {
     fun getByNickName(nickName: String): CachedUserDTO?
     fun getByNickNameOrEmail(nickName: String, email: String): CachedUserDTO?
     fun getAllByIds(ids: List<UUID>): List<CachedUserDTO>
-    fun evictUser(userId: UUID, email: String, nickName: String)
+    fun deleteUser(userId: UUID, email: String, nickName: String)
+    fun evictUserId(userId: UUID)
 }

@@ -110,10 +110,15 @@ class UserCacheService(
         return results
     }
 
-    override fun evictUser(userId: UUID, email: String, nickName: String) {
-        log.debug("CACHE EVICT USER - userId: {}, email: {}, nickName: {}", userId, email, nickName)
+    override fun deleteUser(userId: UUID, email: String, nickName: String) {
+        log.debug("CACHE DELETE USER - userId: {}, email: {}, nickName: {}", userId, email, nickName)
         userCacheStorage.remove(userId)
         emailIndexStorage.remove(email.lowercase())
         nickNameIndexStorage.remove(nickName.lowercase())
+    }
+
+    override fun evictUserId(userId: UUID) {
+        log.debug("CACHE EVICT USER ID - userId: {}", userId)
+        userCacheStorage.remove(userId)
     }
 }
