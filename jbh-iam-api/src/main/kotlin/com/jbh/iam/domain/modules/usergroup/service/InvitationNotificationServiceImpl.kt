@@ -15,12 +15,6 @@ class InvitationNotificationServiceImpl(private val gatewayClientFactory: Gatewa
 
     private val log = customLogger()
 
-    override fun sendReinviteNotification(groupId: UUID, targetUserId: UUID, invitedByUserId: UUID) {
-
-
-        log.error("TODO: Implement notification logic - Reinvite notification for user $targetUserId to group $groupId, invited by $invitedByUserId")
-    }
-
     override fun sendAcceptInvitationNotification(groupId: UUID, userId: UUID) {
         log.error("TODO: Implement notification logic - Accept invitation notification for user $userId to group $groupId")
         TODO("Not yet implemented")

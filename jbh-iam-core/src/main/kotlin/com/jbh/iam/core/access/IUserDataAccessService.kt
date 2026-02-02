@@ -9,4 +9,5 @@ interface IUserDataAccessService {
     fun findByNickNameOrEmail(nickName: String, email: String): UserCore?
 
     fun findByUserId(id: UUID): UserCore?
+    fun fetchByUserNameOrEmail(userNameOrEmail: String): UserCore?
 }

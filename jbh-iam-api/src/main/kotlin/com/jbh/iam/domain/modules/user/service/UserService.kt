@@ -51,6 +51,8 @@ class UserServiceImpl(
         return saved
     }
 
+
+
     fun validateUpdateOperation(dto: InternalUserDTO) {
         userAlreadyExistsThenThrowAnException(dto)
     }
@@ -159,12 +161,18 @@ class UserServiceImpl(
         }
 
         log.debug("findByNickNameOrEmail - CACHE MISS, loading from database")
-        val user = userRepository.findByNickNameOrEmail(nickName, email)
-            ?: throw IllegalArgumentException("User not found with username or email $email")
 
-        val internalDto = user.toInternalUserDTO()
+
+        val internalDto = fetchByUserNameOrEmail(nickName)
         userCache.put(internalDto.id, internalDto.toCachedDTO())
         return internalDto
+    }
+
+    override fun fetchByUserNameOrEmail(userNameOrEmail: String): InternalUserDTO {
+        log.info("Fetching User by ${userNameOrEmail}")
+        val user = userRepository.findByNickNameOrEmail(userNameOrEmail, userNameOrEmail)
+            ?: throw IllegalArgumentException("User not found with username or email $userNameOrEmail")
+        return user.toInternalUserDTO()
     }
 
     fun findByNickName(nickName: String): PublicUserInfo {

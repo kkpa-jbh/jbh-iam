@@ -29,4 +29,10 @@ class UserDataAccessService : IUserDataAccessService {
         val user = userService.findById(id)
         return user.toUserCore()
     }
+
+    override fun fetchByUserNameOrEmail(userNameOrEmail: String): UserCore {
+        val user = userService.fetchByUserNameOrEmail(userNameOrEmail)
+        log.debug("loading user by userName... User Found! ${user.nickName}")
+        return user.toUserCore()
+    }
 }

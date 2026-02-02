@@ -20,5 +20,6 @@ interface UserService {
     fun findAllByIds(ids:  List<UUID>) : List<InternalUserDTO>
 
     fun save(userDomain: UserEntity): InternalUserDTO
+    fun fetchByUserNameOrEmail(userNameOrEmail: String): InternalUserDTO
 
 }

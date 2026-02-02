@@ -37,7 +37,7 @@ class CustomUserDetailsService : UserDetailsService {
      */
     override fun loadUserByUsername(userNameOrEmail: String): UserDetails {
         log.debug("loading user by userName...  ${userNameOrEmail}")
-        val user = userDataAccess.findByNickNameOrEmail(userNameOrEmail, userNameOrEmail)
+        val user = userDataAccess.fetchByUserNameOrEmail(userNameOrEmail)
             ?: throw UsernameNotFoundException("User not found with username or email $userNameOrEmail")
 
         log.debug("loading user by userName... User Found! ${user.nickName}  ${user.email}")

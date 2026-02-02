@@ -62,8 +62,10 @@ class InvitationServiceImpl(
         val targetUserId = targetUser.id
             ?: throw IllegalStateException("User found but has no ID")
 
+        val invitedByUser = userService.findById(invitedByUserId)
+
         val membership = membershipService.validateReinvite(groupId, targetUserId, invitedByUserId)
-        notificationService.sendReinviteNotification(groupId, targetUserId, invitedByUserId)
+        notificationService.sendInvitationNotification(invitationRequest, targetUser, invitedByUser, token)
         return membership
     }
 
