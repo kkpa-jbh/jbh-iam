@@ -5,7 +5,7 @@ import com.jbh.iam.domain.modules.user.model.InternalUserDTO
 import com.jbh.iam.domain.modules.usergroup.model.InvitationRequest
 import com.jbh.iam.gateway.GatewayClientFactory
 import com.jbh.notification.contracts.NotificationType
-import com.jbh.notification.contracts.SendNotificationRequest
+import com.jbh.notification.contracts.SendNotificationCommand
 import com.jbh.notification.contracts.email.templates.TeamInvitationMetadata
 import org.springframework.stereotype.Service
 import java.util.*
@@ -33,7 +33,7 @@ class InvitationNotificationServiceImpl(private val gatewayClientFactory: Gatewa
             .inviterName(invitedByUser.email)
             .build()
 
-        val request = SendNotificationRequest.builder().recipientEmail(targetUser.email).recipientId(targetUser.id)
+        val request = SendNotificationCommand.builder().recipientEmail(targetUser.email).recipientId(targetUser.id)
             .senderEmail(invitedByUser.email)
             .senderUserId(invitedByUser.id)
             .templateMetadata(teamInvitationMetadata)
