@@ -26,3 +26,6 @@ DELETE FROM users_group;
 DELETE FROM user_roles;
 DELETE FROM jbh_user;
 ```
+
+
+Just testing it
