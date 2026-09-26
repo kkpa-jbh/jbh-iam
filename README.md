@@ -83,8 +83,11 @@ Note: `jbh-gateway` has no route for `/jbh-api/admin/**`. Admin endpoints work o
 ## Environment Variables
 - `INSTANCE_PORT`: Server port (default: 9999)
 - `INSTANCE_CONTEXT_PATH`: Application context path (default: `/`)
-- `INSTANCE_HOSTNAME`: Hostname for Postgres and Consul (default: localhost)
-- `DB_NAME`: Database name (default: `jbh`). Note: `make db-create` creates `jbh_finance`, so set `DB_NAME` to match.
+- `INSTANCE_HOSTNAME`: Fallback host for Postgres and Consul (default: localhost)
+- `DB_HOST`, `DB_PORT`, `DB_USERNAME`: Postgres host (default: `INSTANCE_HOSTNAME`), port (5432), user (`jbh_admin`)
+- `CONSUL_HOST`: Consul host (default: `INSTANCE_HOSTNAME`)
+- `CONSUL_DISCOVERY_HOSTNAME`: Name registered in Consul, used by the gateway to reach IAM (default: localhost; Docker: `jbh-iam`)
+- `DB_NAME`: Database name (default: `jbh`, the same name `make db-create` creates)
 - `JBH_ADMIN_PASS`: Database password (user `jbh_admin`)
 - `JWT_SECRET`: JWT signing secret. Must be the same value in `jbh-gateway`.
 - `JWT_EXPIRATION_IN_MS`: Access token expiration (default: 900000 = 15 minutes)

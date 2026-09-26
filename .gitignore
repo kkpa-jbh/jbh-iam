@@ -42,3 +42,8 @@ tmp/
 !*.xml
 !*.properties
 !*.json
+
+# CI workflows and the Docker build context filter must be tracked.
+!.github/
+!.github/**
+!.dockerignore

@@ -43,14 +43,14 @@ ALTER ROLE jbh_admin WITH PASSWORD ':password';
 ALTER ROLE jbh_admin CREATEDB;
 ALTER ROLE jbh_admin CREATEROLE;
 ALTER ROLE jbh_admin LOGIN;
-CREATE DATABASE "jbh_finance" WITH OWNER = jbh_admin ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8' TABLESPACE = pg_default CONNECTION LIMIT = -1;
-GRANT ALL PRIVILEGES ON DATABASE "jbh_finance" TO jbh_admin;
+CREATE DATABASE "jbh" WITH OWNER = jbh_admin ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8' TABLESPACE = pg_default CONNECTION LIMIT = -1;
+GRANT ALL PRIVILEGES ON DATABASE "jbh" TO jbh_admin;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA "public" TO jbh_admin;
-GRANT CONNECT ON DATABASE "jbh_finance" TO jbh_admin;
+GRANT CONNECT ON DATABASE "jbh" TO jbh_admin;
 GRANT ALL PRIVILEGES ON SCHEMA "public" TO jbh_admin;
-ALTER DATABASE "jbh_finance" SET TIME ZONE 'America/Bogota';
+ALTER DATABASE "jbh" SET TIME ZONE 'America/Bogota';
 --Connect To the DB
-\c jbh_finance
+\c jbh
 CREATE EXTENSION pgcrypto;
 -- To verify the created ext use \dx
 -- to return back to postgres \c postgres
