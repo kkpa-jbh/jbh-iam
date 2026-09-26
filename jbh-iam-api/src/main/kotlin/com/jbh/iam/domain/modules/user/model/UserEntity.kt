@@ -58,7 +58,12 @@ open class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    var roles: Set<RoleEntity> = mutableSetOf(RoleEntity())
+    var roles: Set<RoleEntity> = mutableSetOf(RoleEntity()),
+
+    // Last on purpose: toDomain() builds UserEntity with positional arguments.
+    // Set on the first Google sign-in. It is var so an existing password user can be linked later.
+    @Column(name = "google_sub", unique = true)
+    var googleSub: String? = null
 
 ) : AuditModel() {
 

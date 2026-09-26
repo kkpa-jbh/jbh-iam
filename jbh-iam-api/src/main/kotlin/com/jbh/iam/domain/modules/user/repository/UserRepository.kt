@@ -17,4 +17,6 @@ interface UserRepository : JpaRepository<UserEntity, UUID> {
     fun findByNickName(nickName: String): UserEntity?
 
     fun findByEmail(email: String): UserEntity?
+
+    fun findByGoogleSub(googleSub: String): UserEntity?
 }

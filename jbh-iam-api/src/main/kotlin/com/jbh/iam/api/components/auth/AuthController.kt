@@ -21,6 +21,7 @@ class AuthController(
     private val userAvailabilitySrv: UserAvailabilityService,
     private val userRegistrationSrv: UserRegistrationService,
     private val authenticationOperationService: AuthenticationOperationService,
+    private val googleAuthService: GoogleAuthService,
     private val refreshTokenService: com.jbh.iam.domain.modules.user.service.RefreshTokenService,
     private val userRepository: com.jbh.iam.domain.modules.user.repository.UserRepository
 ) {
@@ -48,6 +49,34 @@ class AuthController(
         val refreshToken = refreshTokenService.createRefreshToken(user, request)
 
         // Set both cookies
+        cookieService.setAuthCookie(response, jwt)
+        cookieService.setRefreshTokenCookie(response, refreshToken)
+
+        return ResponseEntity.ok(JwtAuthenticationResponse(jwt, refreshToken))
+    }
+
+    @PostMapping("/google")
+    fun authenticateWithGoogle(
+        @RequestBody googleLoginRequest: GoogleLoginRequest,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<JwtAuthenticationResponse> {
+        val idToken = googleLoginRequest.idToken
+        if (idToken.isNullOrBlank()) {
+            return ResponseEntity.badRequest().body(JwtAuthenticationResponse(error = "idToken is required"))
+        }
+
+        val user = try {
+            googleAuthService.signIn(idToken)
+        } catch (e: GoogleAuthException) {
+            log.info("Google sign-in rejected: ${e.message}")
+            return ResponseEntity.status(401).body(JwtAuthenticationResponse(error = e.message))
+        }
+
+        // From here on it is the same session as a password login.
+        val jwt = authenticationOperationService.generateAccessTokenForUser(user.id!!)
+        val refreshToken = refreshTokenService.createRefreshToken(user, request)
+
         cookieService.setAuthCookie(response, jwt)
         cookieService.setRefreshTokenCookie(response, refreshToken)
 

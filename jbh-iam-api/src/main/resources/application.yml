@@ -15,6 +15,9 @@ app:
   jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:900000}
   # Long-lived refresh token - 30 days
   refreshTokenExpirationInMs: ${REFRESH_TOKEN_EXPIRATION_IN_MS:2592000000}
+  # Google OAuth client IDs accepted as ID token audience, comma separated (web, android, ios).
+  # Default is the public JBH web client ID. Set GOOGLE_CLIENT_IDS to an empty value to turn Google sign-in off.
+  googleClientIds: ${GOOGLE_CLIENT_IDS:191326239101-d9dlh362qavadjid6cbi5prqv679npku.apps.googleusercontent.com}
 
 # JBH Cache Configuration
 jbh:

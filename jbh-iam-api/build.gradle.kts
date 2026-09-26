@@ -38,4 +38,7 @@ dependencies {
 
     // HTTP Client
     implementation("org.apache.httpcomponents.client5:httpclient5")
+
+    // Google sign-in: verifies Google ID tokens against Google's public keys
+    implementation("com.google.api-client:google-api-client:2.8.0")
 }

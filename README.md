@@ -89,6 +89,7 @@ Note: `jbh-gateway` has no route for `/jbh-api/admin/**`. Admin endpoints work o
 - `JWT_SECRET`: JWT signing secret. Must be the same value in `jbh-gateway`.
 - `JWT_EXPIRATION_IN_MS`: Access token expiration (default: 900000 = 15 minutes)
 - `REFRESH_TOKEN_EXPIRATION_IN_MS`: Refresh token expiration (default: 2592000000 = 30 days)
+- `GOOGLE_CLIENT_IDS`: Google OAuth client IDs for Google sign-in, comma separated (web, android, ios). Default: the JBH web client ID. An empty value turns Google sign-in off. The web ID must match `google.clientId` in the `jbh-app` environment files.
 - `CONSUL_PORT`: Consul service discovery port (default: 8500)
 - `JBH_GATEWAY_URL`: Gateway URL used by `jbh-gateway-client` (default: http://localhost:8080)
 - `CACHE_USER_*`: User cache size and expiration (see `application.yml`)
