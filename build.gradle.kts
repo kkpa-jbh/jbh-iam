@@ -20,8 +20,9 @@ allprojects {
         mavenLocal()
         mavenCentral()
         // CI only: jbh-gateway-client and jbh-notification-contracts come from GitHub Packages.
-        // Local builds have no GITHUB_TOKEN and use ~/.m2 (mvn install) instead.
-        System.getenv("GITHUB_TOKEN")?.let { token ->
+        // They belong to other repos, so GITHUB_TOKEN cannot read them: CI passes a classic PAT
+        // with read:packages (repo secret PACKAGES_READ_TOKEN). Local builds use ~/.m2 instead.
+        System.getenv("PACKAGES_READ_TOKEN")?.let { token ->
             listOf("jbh-gateway-client", "jbh-personal-finance").forEach { repo ->
                 maven {
                     url = uri("https://maven.pkg.github.com/kkpa-jbh/$repo")
