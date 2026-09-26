@@ -1,11 +1,15 @@
 # Module Structure
 
-## jbh-iam-view-gateway
+## jbh-iam-api
 
-It's the main application module.
+It's the main application module (pure REST API, no web views).
 
-Purpose: Handles the web interface, potentially using Thymeleaf for server-side rendering.
-Key components: Web controllers, Thymeleaf templates, and view-specific logic.
+Purpose: REST controllers, DTOs, domain modules (`user`, `usergroup`), JPA, Liquibase and the Spring Boot main class.
+It also calls other services through `jbh-gateway` with the `jbh-gateway-client` library (package `com.jbh.iam.gateway`).
+
+## jbh-iam-cache
+
+In-memory user cache (`jbh.cache.user.*` settings).
 
 ## jbh-iam-common
 

@@ -50,7 +50,10 @@ When a refresh token is used to get a new access token:
 
 ## API Endpoints
 
-Base URL: `http://localhost:9999/auth` (local) or your production domain
+Base URL: `http://localhost:8080/jbh-api` (through `jbh-gateway`, local) or your production domain.
+
+All paths below are relative to `/jbh-api`. For example `POST /auth/signin` is `POST http://localhost:8080/jbh-api/auth/signin`.
+The frontend never calls `jbh-iam` (port 9999) directly. In `jbh-app`, the dev proxy sends `/jbh-api` to the gateway.
 
 ### 1. Sign In (Login)
 
@@ -625,11 +628,11 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 ### 3. ❌ Forgetting `credentials: 'include'`
 ```javascript
 // WRONG - Cookies won't be sent
-fetch('http://localhost:9999/users/userinfo');
+fetch('http://localhost:8080/jbh-api/users/userinfo');
 ```
 **Correct:**
 ```javascript
-fetch('http://localhost:9999/users/userinfo', { credentials: 'include' });
+fetch('http://localhost:8080/jbh-api/users/userinfo', { credentials: 'include' });
 ```
 
 ### 4. ❌ Retrying Failed Refresh Requests
@@ -661,8 +664,9 @@ Frontend developers should be aware of these backend configurations:
 |----------|---------|-------------|
 | `INSTANCE_PORT` | 9999 | Backend server port |
 | `INSTANCE_CONTEXT_PATH` | `/` | Base path for all endpoints |
-| `JWT_EXPIRATION_IN_MS` | 604800000 | JWT expiration (7 days in config, but cookies expire in 15 min) |
-| `app.refreshTokenExpirationInMs` | 2592000000 | Refresh token expiration (30 days) |
+| `JWT_EXPIRATION_IN_MS` | 900000 | Access token expiration (15 min) |
+| `REFRESH_TOKEN_EXPIRATION_IN_MS` | 2592000000 | Refresh token expiration (30 days) |
+| `JWT_SECRET` | - | Signing secret. Must be the same in `jbh-gateway`, which validates the access token |
 | `CONSUL_PORT` | 8500 | Service discovery port |
 
 ---
