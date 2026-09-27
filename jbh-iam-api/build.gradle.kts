@@ -2,7 +2,8 @@
 // Enable bootJar to create an executable JAR
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     enabled = true
-    mainClass.set("com.jbh.iam.api.JBHIAMApplication")
+    // Kotlin compiles the top-level `fun main` in JBHIAMApplication.kt into the class JBHIAMApplicationKt.
+    mainClass.set("com.jbh.iam.api.JBHIAMApplicationKt")
 }
 
 // Disable regular jar since we're creating a bootJar
