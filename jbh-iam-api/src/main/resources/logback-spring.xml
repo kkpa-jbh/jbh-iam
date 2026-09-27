@@ -6,22 +6,6 @@
     <property name="LOG_FOLDER" value="../logs"/>
     <property name="LOG_FILE" value="jbh-iam.log"/>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FOLDER}/${LOG_FILE}</file>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>
-                ${LOG_FOLDER}/archived/iam_srv_log_%d{dd-MM-yyyy}.log
-            </fileNamePattern>
-            <maxHistory>10</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-
-    </appender>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -36,6 +20,23 @@
 
     <!-- Local: file in kkpa-jbh/logs (used to debug cross-service problems) plus console. -->
     <springProfile name="!prod">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_FOLDER}/${LOG_FILE}</file>
+
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>
+                    ${LOG_FOLDER}/archived/iam_srv_log_%d{dd-MM-yyyy}.log
+                </fileNamePattern>
+                <maxHistory>10</maxHistory>
+                <totalSizeCap>100MB</totalSizeCap>
+            </rollingPolicy>
+
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+
+        </appender>
+
         <root level="INFO">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
