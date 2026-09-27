@@ -19,6 +19,9 @@ app:
   # Google OAuth client IDs accepted as ID token audience, comma separated (web, android, ios).
   # Default is the public JBH web client ID. Set GOOGLE_CLIENT_IDS to an empty value to turn Google sign-in off.
   googleClientIds: ${GOOGLE_CLIENT_IDS:191326239101-d9dlh362qavadjid6cbi5prqv679npku.apps.googleusercontent.com}
+  # Browser origins allowed to call IAM (CORS), comma separated. Default: local dev servers.
+  # Production sets CORS_ALLOWED_ORIGINS=https://jbh.usemagus.cloud (jbh-deploy compose.yaml).
+  corsAllowedOrigins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200,http://localhost:8100,http://127.0.0.1:4200,http://127.0.0.1:8100}
 
 # JBH Cache Configuration
 jbh:

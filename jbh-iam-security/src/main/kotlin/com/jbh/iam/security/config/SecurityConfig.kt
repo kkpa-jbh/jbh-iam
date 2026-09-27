@@ -6,6 +6,7 @@ import com.jbh.iam.security.authorization.AuthorizationRules
 import com.jbh.iam.security.service.CustomUserDetailsService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -42,6 +43,10 @@ class SecurityConfig() {
 
     @Autowired
     lateinit var jbhAuthorizer: AuthorizationRules
+
+    // Comma-separated in app.corsAllowedOrigins (env CORS_ALLOWED_ORIGINS).
+    @Value("\${app.corsAllowedOrigins}")
+    lateinit var corsAllowedOrigins: List<String>
 
     companion object {
         private val log = LoggerFactory.getLogger(SecurityConfig::class.java)
@@ -113,14 +118,15 @@ class SecurityConfig() {
      *
      * Key settings:
      * - allowCredentials = true: REQUIRED for cookies to work across origins
-     * - allowedOrigins: Specifies which frontend origins can access the API
-     *   - Local development: http://localhost:4200, http://localhost:8100 (Ionic)
-     *   - Production: Add your production frontend domain here
+     * - allowedOrigins: from app.corsAllowedOrigins (env CORS_ALLOWED_ORIGINS)
+     *   - Local development default: http://localhost:4200, http://localhost:8100 (Ionic), and the 127.0.0.1 forms
+     *   - Production: https://jbh.usemagus.cloud. The app and the API share that host, but behind Caddy and the
+     *     gateway IAM sees another host, so Spring still treats the browser's Origin as cross-origin.
      * - allowedMethods: HTTP methods the frontend can use
      * - allowedHeaders: Headers the frontend can send (Authorization, Content-Type, etc.)
      * - exposedHeaders: Headers the frontend can read from responses
      *
-     * SECURITY NOTE: In production, replace localhost origins with your actual frontend domain
+     * SECURITY NOTE: never add "*" — allowCredentials = true requires explicit origins.
      */
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
@@ -131,16 +137,9 @@ class SecurityConfig() {
         // This MUST be true for HttpOnly cookies to work across origins
         configuration.allowCredentials = true
 
-        // Allowed origins: Frontend URLs that can access this API
-        // Add your production frontend domain in production environment
-        configuration.allowedOrigins = listOf(
-            "http://localhost:4200",      // Angular default dev server
-            "http://localhost:8100",      // Ionic default dev server
-            "http://127.0.0.1:4200",      // Alternative localhost notation
-            "http://127.0.0.1:8100"       // Alternative localhost notation
-            // TODO: Add production frontend domain when deploying
-            // "https://your-production-domain.com"
-        )
+        // Allowed origins: frontend URLs that can access this API (see KDoc above)
+        configuration.allowedOrigins = corsAllowedOrigins.map { it.trim() }.filter { it.isNotEmpty() }
+        log.info("CORS allowed origins: {}", configuration.allowedOrigins)
 
         // Allow all standard HTTP methods
         configuration.allowedMethods = listOf(
