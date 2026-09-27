@@ -34,11 +34,19 @@
     </appender>
 
 
-    <root level="INFO">
-        <appender-ref ref="FILE"/>
-    </root>
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-    </root>
+    <!-- Local: file in kkpa-jbh/logs (used to debug cross-service problems) plus console. -->
+    <springProfile name="!prod">
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- Docker (prod): console only. The container file system is read-only; docker logs keeps the output. -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
 </configuration>
