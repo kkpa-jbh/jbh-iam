@@ -44,7 +44,8 @@ class UserServiceImpl(
 
     override fun save(userDomain: UserEntity): InternalUserDTO {
         log.info("Persisting user: {}", userDomain.nickName)
-        validateUpdateOperation(userDomain.toInternalUserDTO())
+        // The entity has no id yet, so it cannot be converted to a DTO before it is saved.
+        userAlreadyExistsThenThrowAnException(userDomain.id, userDomain.nickName, userDomain.email)
         val saved = userRepository.save(userDomain).toInternalUserDTO()
         userCache.put(saved.id, saved.toCachedDTO())
         log.debug("User saved and cached - id: {}, nickName: {}", saved.id, saved.nickName)
@@ -54,22 +55,20 @@ class UserServiceImpl(
 
 
     fun validateUpdateOperation(dto: InternalUserDTO) {
-        userAlreadyExistsThenThrowAnException(dto)
+        userAlreadyExistsThenThrowAnException(dto.id, dto.nickName, dto.email)
     }
 
-    fun userAlreadyExistsThenThrowAnException(dto: InternalUserDTO) {
-        val userBD = findByUniqueUser(dto)
-        userBD?.let {
+    fun userAlreadyExistsThenThrowAnException(id: UUID?, nickName: String, email: String) {
+        val userBD = try {
+            userRepository.findByNickNameOrEmail(nickName = nickName, email = email)
+        } catch (e: org.springframework.dao.IncorrectResultSizeDataAccessException) {
+            throw IllegalArgumentException("Nickname and email already were registered!")
+        } ?: return
 
-            dto.id?.let {
-                if (userBD.id == dto.id) return
-            }
+        if (id != null && userBD.id == id) return
 
-            val propertyExisting = if (dto.email == it.email) "${dto.email}"
-            else
-                "${dto.nickName}"
-            throw IllegalArgumentException("User [$propertyExisting] was already Registered")
-        }
+        val propertyExisting = if (email == userBD.email) email else nickName
+        throw IllegalArgumentException("User [$propertyExisting] was already Registered")
     }
 
     fun updateOperation(dto: InternalUserDTO): InternalUserDTO {
