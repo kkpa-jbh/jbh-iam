@@ -4,12 +4,8 @@ dependencies {
     implementation(project(":jbh-iam-common"))
     implementation(project(":jbh-iam-core"))
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-security") {
-        version {
-            strictly("2.7.7")
-        }
-    }
-    implementation("org.springframework.security:spring-security-config:6.2.0")
+    // Versions come from the Spring Boot BOM. Never pin Spring Security by hand.
+    implementation("org.springframework.boot:spring-boot-starter-security")
     // Same jjwt version as jbh-gateway, which checks the tokens this module signs.
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")

@@ -70,11 +70,10 @@ class SecurityConfig() {
         userDetailService: CustomUserDetailsService?
     ): AuthenticationManager? {
         log.info("Creating authentication manager")
-        return http.getSharedObject<AuthenticationManagerBuilder>(AuthenticationManagerBuilder::class.java)
-            .userDetailsService<CustomUserDetailsService>(userDetailService)
-            .passwordEncoder(bCryptPasswordEncoder)
-            .and()
-            .build()
+        // No .and(): it is deprecated since Spring Security 6.1 and removed in 7.
+        val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        builder.userDetailsService(userDetailService).passwordEncoder(bCryptPasswordEncoder)
+        return builder.build()
     }
 
 

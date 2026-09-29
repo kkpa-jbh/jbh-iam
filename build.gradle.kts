@@ -1,12 +1,12 @@
-extra["postgresqlVersion"] = "42.5.0"
-extra["springCloudVersion"] = "2023.0.0"
+// Spring Cloud 2025.0 is the release train for Spring Boot 3.5.
+extra["springCloudVersion"] = "2025.0.0"
 
 
 plugins {
-    kotlin("jvm") version "1.9.20" apply false
-    kotlin("plugin.spring") version "1.9.20" apply false
-    id("org.springframework.boot") version "3.2.0" apply false
-    id("io.spring.dependency-management") version "1.1.4" apply false
+    kotlin("jvm") version "1.9.25" apply false
+    kotlin("plugin.spring") version "1.9.25" apply false
+    id("org.springframework.boot") version "3.5.16" apply false
+    id("io.spring.dependency-management") version "1.1.7" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.8.0" // To check conflicts between dependencies ./gradlew generateDependencyGraph
     java
 }
@@ -61,7 +61,7 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.apache.httpcomponents.client5:httpclient5:5.2")
+        implementation("org.apache.httpcomponents.client5:httpclient5") // version from the Spring Boot BOM
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.springframework.boot:spring-boot-starter")
         testImplementation("org.springframework.boot:spring-boot-starter-test")

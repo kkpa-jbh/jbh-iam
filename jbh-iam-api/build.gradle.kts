@@ -25,7 +25,7 @@ dependencies {
 
     // Database and migration
     implementation("org.liquibase:liquibase-core")
-    implementation("org.postgresql:postgresql:${property("postgresqlVersion")}")
+    implementation("org.postgresql:postgresql") // version from the Spring Boot BOM
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     // Web and API
