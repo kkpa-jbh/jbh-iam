@@ -21,8 +21,21 @@ class UserRegistrationService(
 
     private val log = customLogger()
 
+    companion object {
+        // Keep in sync with the signup form in jbh-app (signup.page.ts).
+        const val MIN_PASSWORD_LENGTH = 8
+    }
+
     fun registerUser(signUpRequest: SignUpRequest): String {
         log.info("Registering user")
+
+        if (signUpRequest.username.isBlank() || signUpRequest.email.isBlank()) {
+            throw IllegalArgumentException("Username and email are required")
+        }
+
+        if (signUpRequest.password.length < MIN_PASSWORD_LENGTH) {
+            throw IllegalArgumentException("Password must have at least $MIN_PASSWORD_LENGTH characters")
+        }
 
         if (userService.existsByNickName(signUpRequest.username)) {
             throw IllegalArgumentException("NickName is already taken!")

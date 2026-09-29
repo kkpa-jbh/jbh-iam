@@ -2,6 +2,7 @@ package com.jbh.iam.domain.modules.usergroup.service
 
 import com.jbh.iam.api.dto.toDTOList
 import com.jbh.iam.api.services.users.UserService
+import com.jbh.iam.common.exceptions.ForbiddenException
 import com.jbh.iam.domain.modules.common.CrudService
 import com.jbh.iam.domain.modules.usergroup.model.*
 import com.jbh.iam.domain.modules.usergroup.repository.UserGroupRepository
@@ -152,10 +153,35 @@ class UserGroupServiceImpl(
         }
     }
 
-    override fun removeMemberFromGroup(groupId: UUID, userEmail: String) {
-        log.info("Removing $userEmail from group ")
-        userService.findByEmail(userEmail).apply {
-            membershipService.removeMember(groupId, this.id)
+    /** The owner can remove any member. A member can remove only themself. Nobody can remove the owner. */
+    override fun removeMemberFromGroup(groupId: UUID, userEmail: String, requestedByUserId: UUID) {
+        val group = userGroupRepository.findById(groupId)
+            .orElseThrow { IllegalArgumentException("User group with id $groupId not found") }
+        val target = userService.findByEmail(userEmail)
+
+        if (target.id == group.createdBy) {
+            throw ForbiddenException("The owner of group $groupId cannot be removed")
+        }
+        if (requestedByUserId != group.createdBy && requestedByUserId != target.id) {
+            throw ForbiddenException("User $requestedByUserId cannot remove members from group $groupId")
+        }
+
+        log.info("User $requestedByUserId removes user ${target.id} from group $groupId")
+        membershipService.removeMember(groupId, target.id)
+    }
+
+    override fun requireOwner(groupId: UUID, userId: UUID): UsersGroupEntity {
+        val group = userGroupRepository.findById(groupId)
+            .orElseThrow { IllegalArgumentException("User group with id $groupId not found") }
+        if (group.createdBy != userId) {
+            throw ForbiddenException("User $userId is not the owner of group $groupId")
+        }
+        return group
+    }
+
+    override fun requireMember(groupId: UUID, userId: UUID) {
+        if (!membershipService.isAcceptedMember(groupId, userId)) {
+            throw ForbiddenException("User $userId is not a member of group $groupId")
         }
     }
 }

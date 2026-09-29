@@ -29,7 +29,7 @@ class CookieService(private val environment: EnvironmentService) {
 
     /**
      * Configures common security attributes for cookies based on the environment:
-     * - SameSite: "Lax" for local (allows cross-origin on localhost), "None" for production (requires HTTPS)
+     * - SameSite: always "Lax". The browser does not send the cookie on requests that other sites start (CSRF).
      * - Secure: false for local (HTTP), true for production (HTTPS required)
      * - HttpOnly: always true (prevents JavaScript access)
      * - Path: always "/" (available across entire domain)
@@ -38,16 +38,11 @@ class CookieService(private val environment: EnvironmentService) {
         isHttpOnly = true
         path = "/"
 
-        // SameSite configuration for cross-origin support:
-        // - "Lax" for local/development: Allows cross-origin cookies on localhost
-        //   while still providing CSRF protection for state-changing requests
-        // - "None" for production: Required for cross-origin requests with HTTPS
-        //   Note: SameSite=None REQUIRES secure=true (HTTPS)
-        val sameSite = if (environment.isProd()) "None" else "Lax"
-        setAttribute("SameSite", sameSite)
+        // "Lax" is enough: in production the app and the API share one host (jbh.usemagus.cloud),
+        // and localhost ports count as the same site. CSRF is disabled in SecurityConfig, so do not use "None".
+        setAttribute("SameSite", "Lax")
 
-        // Secure flag: Required for SameSite=None, enables cookie encryption over HTTPS
-        // In production with SameSite=None, this MUST be true
+        // Secure flag: the cookie travels only over HTTPS. Required by the __Secure- prefix in production.
         secure = environment.isProd()
     }
 

@@ -34,14 +34,17 @@ class AuthController(
         request: HttpServletRequest,
         response: HttpServletResponse
     ): ResponseEntity<JwtAuthenticationResponse> {
+        val usernameOrEmail = loginRequest.usernameOrEmail
+        val password = loginRequest.password
+        if (usernameOrEmail.isNullOrBlank() || password.isNullOrBlank()) {
+            return ResponseEntity.badRequest()
+                .body(JwtAuthenticationResponse(error = "usernameOrEmail and password are required"))
+        }
+
         // Authenticate user and get access token
-        val jwt = authenticationOperationService.authenticate(
-            loginRequest.usernameOrEmail!!,
-            loginRequest.password!!
-        )
+        val jwt = authenticationOperationService.authenticate(usernameOrEmail, password)
 
         // Get user entity to create refresh token
-        val usernameOrEmail = loginRequest.usernameOrEmail!!
         val user = userRepository.findByNickNameOrEmail(usernameOrEmail, usernameOrEmail)
             ?: return ResponseEntity.status(401).body(JwtAuthenticationResponse(error = "User not found"))
 
@@ -125,7 +128,7 @@ class AuthController(
 
     @PostMapping("/signup")
     fun registerUser(@RequestBody signUpRequest: SignUpRequest): ResponseEntity<*> {
-        log.info("Registering user ${signUpRequest}")
+        log.info("Registering user ${signUpRequest.username}")
 
         try {
             userRegistrationSrv.registerUser(signUpRequest)

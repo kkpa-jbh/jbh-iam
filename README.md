@@ -89,8 +89,8 @@ Note: `jbh-gateway` has no route for `/jbh-api/admin/**`. Admin endpoints work o
 - `CORS_ALLOWED_ORIGINS`: Browser origins allowed by CORS, comma separated (default: the localhost dev servers; production: `https://jbh.usemagus.cloud`)
 - `CONSUL_DISCOVERY_HOSTNAME`: Name registered in Consul, used by the gateway to reach IAM (default: localhost; Docker: `jbh-iam`)
 - `DB_NAME`: Database name (default: `jbh`, the same name `make db-create` creates)
-- `JBH_ADMIN_PASS`: Database password (user `jbh_admin`)
-- `JWT_SECRET`: JWT signing secret. Must be the same value in `jbh-gateway`.
+- `JBH_ADMIN_PASS`: Database password (user `jbh_admin`). **Required**, no default.
+- `JWT_SECRET`: JWT signing secret, Base64, at least 32 bytes (`openssl rand -base64 32`). **Required**, no default: IAM stops at start without it. Must be the same value in `jbh-gateway`.
 - `JWT_EXPIRATION_IN_MS`: Access token expiration (default: 900000 = 15 minutes)
 - `REFRESH_TOKEN_EXPIRATION_IN_MS`: Refresh token expiration (default: 2592000000 = 30 days)
 - `GOOGLE_CLIENT_IDS`: Google OAuth client IDs for Google sign-in, comma separated (web, android, ios). Default: the JBH web client ID. An empty value turns Google sign-in off. The web ID must match `google.clientId` in the `jbh-app` environment files.

@@ -1,5 +1,6 @@
 package com.jbh.iam.security.authentication.service
 
+import com.jbh.iam.common.exceptions.ForbiddenException
 import com.jbh.iam.core.access.AuthenticationOperationService
 import com.jbh.iam.security.authentication.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Autowired
@@ -70,7 +71,7 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
 
     override fun requireAdminRole() {
         val authentication = SecurityContextHolder.getContext().authentication
-            ?: throw org.springframework.security.access.AccessDeniedException("User is not authenticated")
+            ?: throw ForbiddenException("User is not authenticated")
 
         val hasAdminRole = authentication.authorities?.any {
             it.authority == "ROLE_ADMIN"
@@ -78,7 +79,7 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
 
         if (!hasAdminRole) {
             log.warn("Access denied: User does not have ADMIN role. Authorities: ${authentication.authorities}")
-            throw org.springframework.security.access.AccessDeniedException("User does not have ADMIN role")
+            throw ForbiddenException("User does not have ADMIN role")
         }
 
         log.info("Admin role verified for user: ${authentication.name}")

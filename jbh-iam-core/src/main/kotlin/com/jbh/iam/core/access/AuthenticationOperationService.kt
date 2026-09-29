@@ -19,7 +19,7 @@ interface AuthenticationOperationService {
 
     /**
      * Checks if the current authenticated user has ADMIN role.
-     * Throws AccessDeniedException if user is not an admin or not authenticated.
+     * Throws ForbiddenException (HTTP 403) if user is not an admin or not authenticated.
      */
     fun requireAdminRole()
 }

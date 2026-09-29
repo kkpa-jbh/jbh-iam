@@ -11,7 +11,8 @@ server:
 
 # Spring Security JWT
 app:
-  jwtSecret: ${JWT_SECRET:p7YH4n3B6GZC6FvJBHm9a0YzqkXyZP8vJBH1F0sYB7Q=}
+  # Required, no default: Base64, at least 32 bytes. Same value as jbh-gateway.
+  jwtSecret: ${JWT_SECRET}
   # Short-lived access token - 15 minutes
   jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:900000}
   # Long-lived refresh token - 30 days
@@ -41,7 +42,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST:${hostname}}:${DB_PORT:5432}/${DB_NAME:jbh}
     username: ${DB_USERNAME:jbh_admin}
-    password: ${JBH_ADMIN_PASS:xxxxx}
+    password: ${JBH_ADMIN_PASS}
   cloud:
     consul:
       host: ${CONSUL_HOST:${hostname}}

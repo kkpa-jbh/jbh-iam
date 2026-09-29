@@ -14,5 +14,11 @@ interface IUserGroupService {
     fun findAllEntities(): List<UsersGroupEntity>
     fun findGroupsByUserId(userId: UUID): List<UsersGroupEntity>
     fun findGroupsWithMembersByUserId(userId: UUID): List<UserGroupWithMembersResponse>
-    fun removeMemberFromGroup(groupId: UUID, userEmail: String)
+    fun removeMemberFromGroup(groupId: UUID, userEmail: String, requestedByUserId: UUID)
+
+    /** Returns the group when [userId] created it. Throws ForbiddenException (403) otherwise. */
+    fun requireOwner(groupId: UUID, userId: UUID): UsersGroupEntity
+
+    /** Throws ForbiddenException (403) when [userId] is not an accepted member of the group. */
+    fun requireMember(groupId: UUID, userId: UUID)
 }

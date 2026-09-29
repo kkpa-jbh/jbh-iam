@@ -17,7 +17,10 @@ class AuthorizationRules :
 
         val AUTH_API_WHITELIST = arrayOf(
             IAM_BASE_API_PATH + AUTH_PATH + "/**",
-            "/actuator/**",
+            // Only health (Consul check) and info. The other actuator endpoints are not exposed.
+            "/actuator/health",
+            "/actuator/health/**",
+            "/actuator/info",
         )
 
         val AUTH_VIEW_WHITELIST = arrayOf(
