@@ -666,7 +666,7 @@ Frontend developers should be aware of these backend configurations:
 | `INSTANCE_CONTEXT_PATH` | `/` | Base path for all endpoints |
 | `JWT_EXPIRATION_IN_MS` | 900000 | Access token expiration (15 min) |
 | `REFRESH_TOKEN_EXPIRATION_IN_MS` | 2592000000 | Refresh token expiration (30 days) |
-| `JWT_SECRET` | - | Signing secret. Must be the same in `jbh-gateway`, which validates the access token |
+| `JBH_JWT_SECRET` | - | Signing secret. Must be the same in `jbh-gateway`, which validates the access token |
 | `CONSUL_PORT` | 8500 | Service discovery port |
 
 ---

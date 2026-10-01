@@ -24,7 +24,7 @@ private const val TOKEN_TYPE_CLAIM = "token_type"
 /**
  * Creates the JWT after a successful login and validates the JWT sent in the requests.
  *
- * The secret (env `JWT_SECRET`) is Base64. `jbh-gateway` decodes it the same way to check the signature,
+ * The secret (env `JBH_JWT_SECRET`) is Base64. `jbh-gateway` decodes it the same way to check the signature,
  * so both services must keep HS256 and the same decoding.
  */
 @Component
