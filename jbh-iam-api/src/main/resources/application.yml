@@ -12,7 +12,7 @@ server:
 # Spring Security JWT
 app:
   # Required, no default: Base64, at least 32 bytes. Same value as jbh-gateway.
-  jwtSecret: ${JWT_SECRET}
+  jwtSecret: ${JBH_JWT_SECRET}
   # Short-lived access token - 15 minutes
   jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:900000}
   # Long-lived refresh token - 30 days
