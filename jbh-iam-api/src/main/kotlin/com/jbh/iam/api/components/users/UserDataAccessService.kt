@@ -1,5 +1,6 @@
 package com.jbh.iam.api.components.users
 
+import com.jbh.iam.api.exceptions.web.ResourceNotFoundException
 import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.core.access.IUserDataAccessService
 import com.jbh.iam.core.model.UserCore
@@ -21,7 +22,7 @@ class UserDataAccessService : IUserDataAccessService {
 
     override fun findByNickNameOrEmail(nickName: String, email: String): UserCore {
         val user = userService.findByNickNameOrEmail(nickName, email)
-        log.debug("loading user by userName... User Found! ${user.nickName}")
+        log.debug("loading user by userName... User Found! {}", user.nickName)
         return user.toUserCore()
     }
 
@@ -30,9 +31,17 @@ class UserDataAccessService : IUserDataAccessService {
         return user.toUserCore()
     }
 
-    override fun fetchByUserNameOrEmail(userNameOrEmail: String): UserCore {
-        val user = userService.fetchByUserNameOrEmail(userNameOrEmail)
-        log.debug("loading user by userName... User Found! ${user.nickName}")
+    /**
+     * Null when the user does not exist. Spring Security then throws UsernameNotFoundException,
+     * which becomes a 401 on sign-in, the same as a wrong password.
+     */
+    override fun fetchByUserNameOrEmail(userNameOrEmail: String): UserCore? {
+        val user = try {
+            userService.fetchByUserNameOrEmail(userNameOrEmail)
+        } catch (e: ResourceNotFoundException) {
+            return null
+        }
+        log.debug("loading user by userName... User Found! {}", user.nickName)
         return user.toUserCore()
     }
 }

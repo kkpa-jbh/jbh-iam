@@ -6,8 +6,6 @@ import java.util.*
 
 interface UserService {
 
-    fun findByUniqueUser(userDTO: InternalUserDTO): InternalUserDTO
-
     fun existsByNickName(nickName: String): Boolean
 
     fun existsByEmail(email: String): Boolean
