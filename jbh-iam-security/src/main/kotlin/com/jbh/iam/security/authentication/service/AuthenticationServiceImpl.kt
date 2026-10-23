@@ -1,12 +1,15 @@
 package com.jbh.iam.security.authentication.service
 
 import com.jbh.iam.common.exceptions.ForbiddenException
+import com.jbh.iam.common.exceptions.InvalidCredentialsException
 import com.jbh.iam.core.access.AuthenticationOperationService
 import com.jbh.iam.security.authentication.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import java.util.*
 
@@ -27,13 +30,17 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
     }
 
     override fun authenticate(usernameOrEmail: String, password: String): String {
-        log.info("Authenticating user $usernameOrEmail")
-        val authentication = authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(
-                usernameOrEmail,
-                password
-            )
-        )
+        log.debug("Authenticating user {}", usernameOrEmail)
+        val authentication = try {
+            authenticationManager.authenticate(UsernamePasswordAuthenticationToken(usernameOrEmail, password))
+        } catch (e: AuthenticationServiceException) {
+            // A server problem, for example the database. It is not a wrong password.
+            throw e
+        } catch (e: AuthenticationException) {
+            // Wrong password or unknown user. The api module cannot see Spring Security types.
+            log.info("Sign-in failed: {}", e.javaClass.simpleName)
+            throw InvalidCredentialsException()
+        }
         SecurityContextHolder.getContext().authentication = authentication
 
         val jwt = tokenProvider.generateToken(authentication)
@@ -53,7 +60,7 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
     }
 
     override fun generateAccessTokenForUser(userId: UUID): String {
-        log.info("Generating access token for user $userId")
+        log.info("Generating access token for user {}", userId)
 
         // Load user details
         val userDetails = customUserDetailsService.loadUserById(userId)
@@ -78,11 +85,11 @@ class AuthenticationServiceImpl : AuthenticationOperationService {
         } ?: false
 
         if (!hasAdminRole) {
-            log.warn("Access denied: User does not have ADMIN role. Authorities: ${authentication.authorities}")
+            log.warn("Access denied: User does not have ADMIN role. Authorities: {}", authentication.authorities)
             throw ForbiddenException("User does not have ADMIN role")
         }
 
-        log.info("Admin role verified for user: ${authentication.name}")
+        log.info("Admin role verified for user: {}", authentication.name)
     }
 
 }

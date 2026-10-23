@@ -5,6 +5,7 @@ import com.jbh.iam.api.exceptions.web.BadRequestException
 import com.jbh.iam.api.exceptions.web.ResourceNotFoundException
 import com.jbh.iam.common.exceptions.BusinessException
 import com.jbh.iam.common.exceptions.ForbiddenException
+import com.jbh.iam.common.exceptions.InvalidCredentialsException
 import com.jbh.iam.common.payload.ErrorMessageResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -45,7 +46,7 @@ class GlobalErrorHandler {
 
     @ExceptionHandler(ForbiddenException::class)
     fun forbiddenHandler(ex: ForbiddenException): ResponseEntity<ErrorMessageResponse> {
-        log.warn("Access denied: ${ex.message}")
+        log.warn("Access denied: {}", ex.message)
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(ErrorMessageResponse("You are not allowed to do this."))
     }
@@ -59,9 +60,20 @@ class GlobalErrorHandler {
     fun badRequestHandler(ex: BadRequestException): ResponseEntity<ErrorMessageResponse> =
         ResponseEntity.badRequest().body(ErrorMessageResponse(ex.message ?: "Bad request"))
 
+    // Services throw it for bad input. Without this handler it would become 500.
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun illegalArgumentHandler(ex: IllegalArgumentException): ResponseEntity<ErrorMessageResponse> {
+        log.info("Bad request: {}", ex.message)
+        return ResponseEntity.badRequest().body(ErrorMessageResponse(ex.message ?: "Bad request"))
+    }
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    fun invalidCredentialsHandler(ex: InvalidCredentialsException): ResponseEntity<ErrorMessageResponse> =
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorMessageResponse(ex.message ?: "Invalid username or password"))
+
     @ExceptionHandler(Throwable::class)
     fun throwableHandler(ex: Throwable): ResponseEntity<ErrorMessageResponse> {
-        log.error("An exception not caught: ${ex.message}", ex)
+        log.error("An exception not caught: {}", ex.message, ex)
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ErrorMessageResponse("Working to fix this error. Be patience!"))
