@@ -3,6 +3,7 @@ package com.jbh.iam.api
 import com.jbh.iam.api.exceptions.web.BadRequestException
 import com.jbh.iam.api.exceptions.web.ResourceNotFoundException
 import com.jbh.iam.common.exceptions.ForbiddenException
+import com.jbh.iam.common.exceptions.InvalidCredentialsException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -25,6 +26,22 @@ class GlobalErrorHandlerTest {
             .isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(handler.badRequestHandler(BadRequestException("bad")).statusCode)
             .isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `illegal argument gives 400 with its message`() {
+        val response = handler.illegalArgumentHandler(IllegalArgumentException("NickName is already taken!"))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body!!.message).isEqualTo("NickName is already taken!")
+    }
+
+    @Test
+    fun `invalid credentials give 401 with a generic message`() {
+        val response = handler.invalidCredentialsHandler(InvalidCredentialsException())
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
+        assertThat(response.body!!.message).isEqualTo("Invalid username or password")
     }
 
     @Test
