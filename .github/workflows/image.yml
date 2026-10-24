@@ -25,6 +25,13 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       # PACKAGES_READ_TOKEN turns on the GitHub Packages repositories in build.gradle.kts.
+      # Unit tests only: they need no Postgres, Consul, or network. A failed test stops the image.
+      - name: Run tests
+        run: ./gradlew --no-daemon test
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
+
       - name: Build boot jar
         run: ./gradlew --no-daemon :jbh-iam-api:bootJar
         env:

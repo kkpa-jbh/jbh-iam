@@ -1,12 +1,14 @@
-﻿package com.jbh.iam.api.components.auth
+package com.jbh.iam.api.components.auth
 
 
 import com.jbh.iam.api.Routes
 import com.jbh.iam.api.components.users.UserAvailabilityService
 import com.jbh.iam.api.components.users.UserRegistrationService
+import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.common.logging.customLogger
 import com.jbh.iam.common.payload.*
 import com.jbh.iam.core.access.AuthenticationOperationService
+import com.jbh.iam.domain.modules.user.service.RefreshTokenService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
@@ -22,8 +24,8 @@ class AuthController(
     private val userRegistrationSrv: UserRegistrationService,
     private val authenticationOperationService: AuthenticationOperationService,
     private val googleAuthService: GoogleAuthService,
-    private val refreshTokenService: com.jbh.iam.domain.modules.user.service.RefreshTokenService,
-    private val userRepository: com.jbh.iam.domain.modules.user.repository.UserRepository
+    private val refreshTokenService: RefreshTokenService,
+    private val userService: UserService
 ) {
 
     private val log = customLogger()
@@ -44,12 +46,11 @@ class AuthController(
         // Authenticate user and get access token
         val jwt = authenticationOperationService.authenticate(usernameOrEmail, password)
 
-        // Get user entity to create refresh token
-        val user = userRepository.findByNickNameOrEmail(usernameOrEmail, usernameOrEmail)
-            ?: return ResponseEntity.status(401).body(JwtAuthenticationResponse(error = "User not found"))
+        // The user exists: authenticate() above failed otherwise.
+        val user = userService.findByNickNameOrEmail(usernameOrEmail, usernameOrEmail)
 
         // Create refresh token
-        val refreshToken = refreshTokenService.createRefreshToken(user, request)
+        val refreshToken = refreshTokenService.createRefreshToken(user.id, request)
 
         // Set both cookies
         cookieService.setAuthCookie(response, jwt)
@@ -72,7 +73,7 @@ class AuthController(
         val user = try {
             googleAuthService.signIn(idToken)
         } catch (e: GoogleAuthException) {
-            log.info("Google sign-in rejected: ${e.message}")
+            log.info("Google sign-in rejected")
             return ResponseEntity.status(401).body(JwtAuthenticationResponse(error = e.message))
         }
 
@@ -97,25 +98,15 @@ class AuthController(
             ?: return ResponseEntity.status(401)
                 .body(JwtAuthenticationResponse(error = "Refresh token not found"))
 
-        // Validate refresh token and get user ID
-        val userId = refreshTokenService.validateAndGetUserId(oldRefreshToken)
+        // Revoke the old token and create a new one (rotation).
+        // Null when the token is invalid, expired, or already used by a parallel request.
+        val rotated = refreshTokenService.rotate(oldRefreshToken, request)
             ?: return ResponseEntity.status(401)
                 .body(JwtAuthenticationResponse(error = "Invalid or expired refresh token"))
-
-        log.info("Refreshing Token  $userId " )
-        // Revoke old refresh token (token rotation security practice)
-        refreshTokenService.revokeToken(oldRefreshToken)
-
-        // Get user entity to create new refresh token
-        val user = userRepository.findById(userId).orElseThrow {
-            IllegalStateException("User not found for ID: $userId")
-        }
-
-        // Create new refresh token (rotation)
-        val newRefreshToken = refreshTokenService.createRefreshToken(user, request)
+        val newRefreshToken = rotated.refreshToken
 
         // Generate new access token for the user
-        val newAccessToken = authenticationOperationService.generateAccessTokenForUser(userId)
+        val newAccessToken = authenticationOperationService.generateAccessTokenForUser(rotated.userId)
 
         // Set both new cookies
         cookieService.setAuthCookie(response, newAccessToken)
@@ -137,7 +128,7 @@ class AuthController(
         }
 
         val location = ServletUriComponentsBuilder
-            .fromCurrentContextPath().path("/api/users/{username}")
+            .fromCurrentContextPath().path(Routes.IAM_BASE_API_PATH + Routes.USERS_PATH + "/{username}")
             .buildAndExpand(signUpRequest.username).toUri()
 
         return ResponseEntity.created(location).body<Any>(ApiResponse(true, "User registered successfully"))

@@ -20,28 +20,6 @@ class UserServiceImpl(
 
     private val log = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
-    fun validateSaveOperation(dto: InternalUserDTO) {
-        if (!isNewAndUnique(dto)) {
-            throw IllegalArgumentException("User ${dto.email} - ${dto.nickName} already was registered.")
-        }
-    }
-
-    fun isNewAndUnique(dto: InternalUserDTO): Boolean {
-        return dto.id == null && findByUniqueUser(dto) == null
-    }
-
-    @Transactional(readOnly = true)
-    override fun findByUniqueUser(userDTO: InternalUserDTO): InternalUserDTO {
-        try {
-            return userRepository.findByNickNameOrEmail(
-                nickName = userDTO.nickName,
-                email = userDTO.email
-            )?.toInternalUserDTO() ?: throw IllegalArgumentException("User not found with username or email $userDTO")
-        } catch (e: org.springframework.dao.IncorrectResultSizeDataAccessException) {
-            throw IllegalArgumentException("Nickname and email already were registered!")
-        }
-    }
-
     override fun save(userDomain: UserEntity): InternalUserDTO {
         log.info("Persisting user: {}", userDomain.nickName)
         // The entity has no id yet, so it cannot be converted to a DTO before it is saved.
@@ -52,11 +30,6 @@ class UserServiceImpl(
         return saved
     }
 
-
-
-    fun validateUpdateOperation(dto: InternalUserDTO) {
-        userAlreadyExistsThenThrowAnException(dto.id, dto.nickName, dto.email)
-    }
 
     fun userAlreadyExistsThenThrowAnException(id: UUID?, nickName: String, email: String) {
         val userBD = try {
@@ -79,18 +52,14 @@ class UserServiceImpl(
     }
 
     fun delete(dto: InternalUserDTO): Boolean {
-        dto?.also {
-            try {
-                userRepository.deleteById(dto.id!!)
-                userCache.deleteUser(dto.id, dto.email, dto.nickName)
-                log.info("User deleted and evicted from cache - id: {}, nickName: {}", dto.id, dto.nickName)
-                return true
-            } catch (enf: Exception) {
-                throw java.lang.IllegalArgumentException("User  $it not found")
-            }
+        // deleteById ignores a missing id, so check first to give a clear not-found error.
+        if (!userRepository.existsById(dto.id)) {
+            throw ResourceNotFoundException("User", "id", dto.id)
         }
-
-        throw java.lang.IllegalArgumentException("Not user to be deleted")
+        userRepository.deleteById(dto.id)
+        userCache.deleteUser(dto.id, dto.email, dto.nickName)
+        log.info("User deleted and evicted from cache - id: {}, nickName: {}", dto.id, dto.nickName)
+        return true
     }
 
     fun findAll(): List<PublicUserInfo> {
@@ -105,7 +74,7 @@ class UserServiceImpl(
             log.debug("findById - CACHE MISS, loading from database: {}", id)
             userRepository.findById(id).orElse(null)?.toInternalUserDTO()?.toCachedDTO()
         }?.toInternalDTO()
-            ?: throw IllegalArgumentException("User not found with id $id")
+            ?: throw ResourceNotFoundException("User", "id", id)
     }
 
     override fun findByEmail(email: String): InternalUserDTO {
@@ -117,7 +86,7 @@ class UserServiceImpl(
 
         log.debug("findByEmail - CACHE MISS, loading from database: {}", email)
         val user = userRepository.findByEmail(email)
-            ?: throw java.lang.IllegalArgumentException(" User not found with email $email")
+            ?: throw ResourceNotFoundException("User", "email", email)
 
         val internalDto = user.toInternalUserDTO()
         userCache.put(internalDto.id, internalDto.toCachedDTO())
@@ -160,17 +129,16 @@ class UserServiceImpl(
         }
 
         log.debug("findByNickNameOrEmail - CACHE MISS, loading from database")
-
-
-        val internalDto = fetchByUserNameOrEmail(nickName)
+        val internalDto = userRepository.findByNickNameOrEmail(nickName, email)?.toInternalUserDTO()
+            ?: throw ResourceNotFoundException("User", "nickname or email", nickName)
         userCache.put(internalDto.id, internalDto.toCachedDTO())
         return internalDto
     }
 
     override fun fetchByUserNameOrEmail(userNameOrEmail: String): InternalUserDTO {
-        log.info("Fetching User by ${userNameOrEmail}")
+        log.debug("Fetching user by {}", userNameOrEmail)
         val user = userRepository.findByNickNameOrEmail(userNameOrEmail, userNameOrEmail)
-            ?: throw IllegalArgumentException("User not found with username or email $userNameOrEmail")
+            ?: throw ResourceNotFoundException("User", "username or email", userNameOrEmail)
         return user.toInternalUserDTO()
     }
 

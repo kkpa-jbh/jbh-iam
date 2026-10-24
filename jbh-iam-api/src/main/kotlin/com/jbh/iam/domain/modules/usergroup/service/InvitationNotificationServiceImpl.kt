@@ -42,7 +42,7 @@ class InvitationNotificationServiceImpl(private val gatewayClientFactory: Gatewa
         var headers = HashMap<String, String>()
         headers["Authorization"] = token
 
-        log.info("Sending Email Notification for user ${targetUser.id} to group ${invitationRequest.teamID}  : ${request}: ${headers}")
+        log.info("Sending Email Notification for user ${targetUser.id} to group ${invitationRequest.teamID}  : ${request}")
         try {
             val httpResponse = gatewayClientFactory.getNotificationClient()
                 .sendNotification(request, NotificationType.EMAIL, headers)
