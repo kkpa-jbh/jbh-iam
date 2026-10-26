@@ -42,4 +42,8 @@ dependencies {
 
     // Google sign-in: verifies Google ID tokens against Google's public keys
     implementation("com.google.api-client:google-api-client:2.8.0")
+
+    // Integration test: real Postgres in Docker (versions from the Spring Boot BOM)
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 }

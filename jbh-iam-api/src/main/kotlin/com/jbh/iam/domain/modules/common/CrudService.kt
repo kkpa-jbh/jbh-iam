@@ -66,7 +66,7 @@ abstract class CrudService<T> {
 
     // TODO Register into Kibana or error message table.
     private fun registerException(e: Throwable) {
-        log.error("[Registering Exception ${e.printStackTrace()} - ${e.message}")
+        log.error("Registering exception: {}", e.message, e)
     }
 
     /**
