@@ -29,16 +29,9 @@ class UserGroupServiceImpl(
     }
 
     override fun delete(dto: UserGroupDTO): Boolean {
-        dto.also {
-            try {
-                if (dto.id == null) throw IllegalArgumentException("There isn't a user group defined to be removed")
-                userGroupRepository.deleteById(dto.id!!)
-                return true
-            } catch (enf: Exception) {
-                throw IllegalArgumentException("User group $it not found")
-            }
-        }
-        throw IllegalArgumentException("No user group to be deleted")
+        val id = requireNotNull(dto.id) { "There isn't a user group defined to be removed" }
+        deleteById(id)
+        return true
     }
 
     override fun findAll(): List<UserGroupDTO> {
