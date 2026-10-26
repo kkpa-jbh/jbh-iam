@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.25" apply false
     id("org.springframework.boot") version "3.5.16" apply false
     id("io.spring.dependency-management") version "1.1.7" apply false
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.2" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.8.0" // To check conflicts between dependencies ./gradlew generateDependencyGraph
     java
 }
@@ -43,6 +44,13 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "java")
     apply(plugin = "jacoco")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    // Reports style problems but does not fail the build yet.
+    // Run ./gradlew ktlintFormat, review the diff, then remove this block to enforce the rules.
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        ignoreFailures.set(true)
+    }
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
