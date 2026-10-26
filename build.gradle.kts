@@ -42,6 +42,7 @@ subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "java")
+    apply(plugin = "jacoco")
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -84,5 +85,15 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        // The coverage report runs after every test run.
+        finalizedBy("jacocoTestReport")
+    }
+
+    // CSV is for the CI summary. XML is for coverage tools.
+    tasks.withType<org.gradle.testing.jacoco.tasks.JacocoReport> {
+        reports {
+            xml.required.set(true)
+            csv.required.set(true)
+        }
     }
 }
