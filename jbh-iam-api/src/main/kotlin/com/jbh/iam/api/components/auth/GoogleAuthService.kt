@@ -7,11 +7,10 @@ import com.google.api.client.json.gson.GsonFactory
 import com.jbh.iam.api.exceptions.web.AppException
 import com.jbh.iam.api.util.DefaultValues
 import com.jbh.iam.common.logging.customLogger
-import com.jbh.iam.core.model.RoleName
 import com.jbh.iam.core.security.IPasswordEncoder
 import com.jbh.iam.domain.modules.user.model.UserEntity
-import com.jbh.iam.domain.modules.user.repository.RoleRepository
-import com.jbh.iam.domain.modules.user.repository.UserRepository
+import com.jbh.iam.domain.modules.user.service.GoogleAccountService
+import com.jbh.iam.domain.modules.user.service.RoleService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -27,8 +26,8 @@ class GoogleAuthException(message: String) : RuntimeException(message)
 @Service
 class GoogleAuthService(
     @Value("\${app.googleClientIds:}") clientIds: String,
-    private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository,
+    private val accounts: GoogleAccountService,
+    private val roleService: RoleService,
     @Qualifier("jbhPasswordEncoder") private val jbhPasswordEncoder: IPasswordEncoder
 ) {
 
@@ -49,16 +48,16 @@ class GoogleAuthService(
         val googleSub = payload.subject
         val email = payload.email
 
-        userRepository.findByGoogleSub(googleSub)?.let { return it }
+        accounts.findByGoogleSub(googleSub)?.let { return it }
 
-        userRepository.findByEmail(email)?.let { existing ->
+        accounts.findByEmail(email)?.let { existing ->
             if (existing.googleSub != null) {
                 // Same email, but another Google account is already linked. Never re-link silently.
                 throw GoogleAuthException("Email is linked to another Google account")
             }
             log.info("Linking Google account to existing user ${existing.id}")
             existing.googleSub = googleSub
-            return userRepository.save(existing)
+            return accounts.save(existing)
         }
 
         return createUser(googleSub, email, payload["name"] as String?)
@@ -86,8 +85,7 @@ class GoogleAuthService(
 
     private fun createUser(googleSub: String, email: String, name: String?): UserEntity {
         val nickName = uniqueNickName(email)
-        val userRole = roleRepository.findByName(RoleName.ROLE_USER)
-            .orElseThrow { AppException("User Role not set.") }
+        val userRole = roleService.defaultUserRole()
 
         val user = UserEntity(
             userName = displayName(name, email),
@@ -100,7 +98,7 @@ class GoogleAuthService(
         user.roles = Collections.singleton(userRole)
 
         log.info("Creating user from Google sign-in, nickName $nickName")
-        return userRepository.save(user)
+        return accounts.save(user)
     }
 
     private fun displayName(name: String?, email: String): String {
@@ -115,11 +113,11 @@ class GoogleAuthService(
             .padEnd(MIN_NICK_NAME_LENGTH, '0')
             .take(DefaultValues.MAX_DESC_NAMES_LENGTH - SUFFIX_LENGTH - 1)
 
-        if (!userRepository.existsByNickName(base)) return base
+        if (!accounts.existsByNickName(base)) return base
 
         repeat(MAX_NICK_NAME_ATTEMPTS) {
             val candidate = "$base-${(1000..9999).random()}"
-            if (!userRepository.existsByNickName(candidate)) return candidate
+            if (!accounts.existsByNickName(candidate)) return candidate
         }
         throw AppException("Could not generate a free nickName for $email")
     }
