@@ -78,7 +78,7 @@ class AuthController(
         }
 
         // From here on it is the same session as a password login.
-        val jwt = authenticationOperationService.generateAccessTokenForUser(user.id!!)
+        val jwt = authenticationOperationService.generateAccessTokenForUser(checkNotNull(user.id) { "Saved user has no id" })
         val refreshToken = refreshTokenService.createRefreshToken(user, request)
 
         cookieService.setAuthCookie(response, jwt)
