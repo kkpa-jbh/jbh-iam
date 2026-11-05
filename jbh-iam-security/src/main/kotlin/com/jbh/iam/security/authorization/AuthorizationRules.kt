@@ -17,10 +17,12 @@ class AuthorizationRules :
 
         val AUTH_API_WHITELIST = arrayOf(
             IAM_BASE_API_PATH + AUTH_PATH + "/**",
-            // Only health (Consul check) and info. The other actuator endpoints are not exposed.
+            // Health (Consul check), info, and prometheus (metrics scrape). The other actuator
+            // endpoints are not exposed. /actuator is not public: Caddy and the gateway forward only /jbh-api.
             "/actuator/health",
             "/actuator/health/**",
             "/actuator/info",
+            "/actuator/prometheus",
         )
 
         val AUTH_VIEW_WHITELIST = arrayOf(
