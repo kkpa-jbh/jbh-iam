@@ -9,6 +9,6 @@ dependencies {
     // Same jjwt version as jbh-gateway, which checks the tokens this module signs.
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
     // Add other security-related dependencies
 }
