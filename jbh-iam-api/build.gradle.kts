@@ -32,6 +32,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    // Metrics at /actuator/prometheus (version from the Spring Boot BOM)
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
 
     // Service discovery
