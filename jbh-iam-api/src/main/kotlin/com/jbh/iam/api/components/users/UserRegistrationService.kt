@@ -1,13 +1,11 @@
 package com.jbh.iam.api.components.users
 
-import com.jbh.iam.api.exceptions.web.AppException
 import com.jbh.iam.api.services.users.UserService
 import com.jbh.iam.common.logging.customLogger
 import com.jbh.iam.common.payload.SignUpRequest
-import com.jbh.iam.core.model.RoleName
 import com.jbh.iam.core.security.IPasswordEncoder
 import com.jbh.iam.domain.modules.user.model.UserEntity
-import com.jbh.iam.domain.modules.user.repository.RoleRepository
+import com.jbh.iam.domain.modules.user.service.RoleService
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import java.util.*
@@ -15,7 +13,7 @@ import java.util.*
 @Service
 class UserRegistrationService(
     private val userService: UserService,
-    private val roleRepository: RoleRepository,
+    private val roleService: RoleService,
     @Qualifier("jbhPasswordEncoder") private val jbhPasswordEncoder: IPasswordEncoder
 ) {
 
@@ -54,10 +52,7 @@ class UserRegistrationService(
 
         user.password = jbhPasswordEncoder.encode(user.password)
 
-        val userRole = roleRepository.findByName(RoleName.ROLE_USER)
-            .orElseThrow { AppException("User Role not set.") }
-
-        user.roles = (Collections.singleton(userRole))
+        user.roles = Collections.singleton(roleService.defaultUserRole())
 
         userService.save(user)
         return "true"

@@ -35,10 +35,18 @@ The structure supports code reuse, separation of concerns, and scalability.
 # Or build and run the JAR
 ./gradlew build
 java -jar jbh-iam-api/build/libs/jbh-iam-api-0.0.1-SNAPSHOT.jar
-
-
-  cd /Users/cristianpena/cpena/sw/github/kkpa-jbh/jbh-iam && ./gradlew compileKotlin   
 ```
+
+Set `JBH_ADMIN_PASS` and `JBH_JWT_SECRET` first. `.env.example` lists them. You also need Postgres and Consul (see "Environment Variables").
+
+## Test it
+```bash
+./gradlew test
+```
+- Unit tests need nothing else.
+- `AuthFlowIntegrationTest` (sign up, sign in, refresh, reuse, logout) starts Postgres with Testcontainers. It is skipped when Docker is not running.
+- Each module writes a JaCoCo report to `<module>/build/reports/jacoco/test/`. CI prints the total line coverage in the job summary.
+- `./gradlew ktlintCheck` reports style problems. It does not fail the build yet.
 
 ## API Endpoints
 
@@ -97,3 +105,19 @@ Note: `jbh-gateway` has no route for `/jbh-api/admin/**`. Admin endpoints work o
 - `CONSUL_PORT`: Consul service discovery port (default: 8500)
 - `JBH_GATEWAY_URL`: Gateway URL used by `jbh-gateway-client` (default: http://localhost:8080)
 - `CACHE_USER_*`: User cache size and expiration (see `application.yml`)
+
+## Decisions and trade-offs
+- **HS256 JWT with a secret shared with `jbh-gateway`**, instead of a public/private key pair. It is simple, and the gateway can validate tokens without calling IAM. The cost: the secret must stay identical in both services, and anyone who has it can create tokens.
+- **Refresh tokens are stored as SHA-256 hashes and rotated on every use.** One database update (`revokeIfActive`) decides which parallel call wins. A reused token gets `401`.
+- **Liquibase owns the schema** (`ddl-auto: none`). Changes are explicit and reviewed, but every model change needs a changelog.
+- **In-memory user cache** (`jbh-iam-cache`) instead of Redis. It has no extra service to run. The cost: each instance has its own cache, so a running second instance can show stale data until entries expire.
+- **Calls to other services go through `jbh-gateway`** with `jbh-gateway-client`, not directly. One place checks tokens and applies rate limits.
+
+## Limits / next steps
+- There is no OpenAPI spec. The endpoint tables above are the only API doc.
+- ktlint does not fail the build yet, and many files use wildcard imports.
+- Early commits contain old development credentials. Do not reuse them anywhere.
+- Admin endpoints are not routed by `jbh-gateway`. Call port 9999 directly.
+
+## License
+MIT. See `LICENSE`.

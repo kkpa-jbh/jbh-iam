@@ -29,16 +29,9 @@ class UserGroupServiceImpl(
     }
 
     override fun delete(dto: UserGroupDTO): Boolean {
-        dto.also {
-            try {
-                if (dto.id == null) throw IllegalArgumentException("There isn't a user group defined to be removed")
-                userGroupRepository.deleteById(dto.id!!)
-                return true
-            } catch (enf: Exception) {
-                throw IllegalArgumentException("User group $it not found")
-            }
-        }
-        throw IllegalArgumentException("No user group to be deleted")
+        val id = requireNotNull(dto.id) { "There isn't a user group defined to be removed" }
+        deleteById(id)
+        return true
     }
 
     override fun findAll(): List<UserGroupDTO> {
@@ -78,7 +71,7 @@ class UserGroupServiceImpl(
         )
         val savedGroup = userGroupRepository.save(entity)
 
-        membershipService.addMember(groupId = savedGroup.id!!, userId = createdByUserId)
+        membershipService.addMember(groupId = checkNotNull(savedGroup.id), userId = createdByUserId)
         log.info("Added creator $createdByUserId as member of group ${savedGroup.id}")
 
         return savedGroup
@@ -125,7 +118,7 @@ class UserGroupServiceImpl(
         val groups = findGroupsByUserId(userId)
 
         return groups.map { group ->
-            val memberships = membershipService.findMembersByGroupId(group.id!!)
+            val memberships = membershipService.findMembersByGroupId(checkNotNull(group.id))
             val userIds = memberships.map { it.id.userId }
             val users = userService.findAllByIds(userIds).associateBy { it.id }
 
@@ -142,7 +135,7 @@ class UserGroupServiceImpl(
             }
 
             UserGroupWithMembersResponse(
-                id = group.id!!,
+                id = checkNotNull(group.id),
                 shortName = group.shortName,
                 name = group.name,
                 createdBy = group.createdBy,
