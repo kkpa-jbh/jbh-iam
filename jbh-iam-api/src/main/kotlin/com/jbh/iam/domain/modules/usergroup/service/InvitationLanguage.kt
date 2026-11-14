@@ -11,6 +11,7 @@ object InvitationLanguage {
         if (header.isNullOrBlank()) return null
         return try {
             Locale.LanguageRange.parse(header)
+                .filter { it.weight > 0.0 }
                 .map { it.range.substringBefore('-').lowercase() }
                 .firstOrNull { it in SUPPORTED }
         } catch (e: IllegalArgumentException) {
