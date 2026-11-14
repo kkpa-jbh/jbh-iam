@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "kind": "change",
+  "change": "jbh-iam-api-invitation-locale-and-package-source",
+  "module": "jbh-iam-api",
+  "roadmap": null,
+  "request": "JBH-74 section 4: (a) build.gradle.kts, PACKAGES_READ_TOKEN block: change listOf(\"jbh-gateway-client\", \"jbh-personal-finance\") to listOf(\"jbh-gateway-client\", \"jbh-notification\") and update the comment. (b) InvitationNotificationServiceImpl.sendInvitationNotification: set .locale(...) on TeamInvitationMetadata.builder(), taken from the Accept-Language header of the inviter's HTTP request (language part only, es-CO -> es). Send it only when it is 'en' or 'es'; otherwise leave locale unset so the notification service uses its default. Check the value is available on the thread that runs the method.",
+  "status": "proposed",
+  "rollup": {
+    "current": [],
+    "pending": [
+      "1.1",
+      "2.1",
+      "2.2",
+      "2.3",
+      "3.1",
+      "4.1"
+    ],
+    "blocked": [],
+    "done": []
+  },
+  "created_at": "2026-11-14T02:00:40Z",
+  "updated_at": "2026-11-14T02:00:40Z",
+  "leader": {
+    "assistant": "Claude Code",
+    "model": "claude-opus-5-5"
+  },
+  "git": {
+    "strategy": "auto",
+    "branch": "ft/CH1-JBH-74-jbh-iam-api-invitation-locale-and-package-source",
+    "base": "553a5234af3dbbae3acaa392282e5f3f1d2eb8ae",
+    "ticket": "JBH-74",
+    "ticket_url": null,
+    "ticket_tracker": "linear",
+    "created_at": "2026-11-14T02:00:40Z"
+  },
+  "tasks": [
+    {
+      "id": "1.1",
+      "title": "Create InvitationLanguage.fromAcceptLanguage (D2, D3)",
+      "module": "jbh-iam-api",
+      "depends_on": [],
+      "parallel_ok": false,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    },
+    {
+      "id": "2.1",
+      "title": "sendInvitationNotification gets acceptLanguage and sets .locale (D1)",
+      "module": "jbh-iam-api",
+      "depends_on": [
+        "1.1"
+      ],
+      "parallel_ok": false,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    },
+    {
+      "id": "2.2",
+      "title": "InvitationService passes acceptLanguage in invite and reinvite (D1)",
+      "module": "jbh-iam-api",
+      "depends_on": [
+        "2.1"
+      ],
+      "parallel_ok": false,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    },
+    {
+      "id": "2.3",
+      "title": "UserGroupController reads optional Accept-Language header (D1)",
+      "module": "jbh-iam-api",
+      "depends_on": [
+        "2.2"
+      ],
+      "parallel_ok": false,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    },
+    {
+      "id": "3.1",
+      "title": "Root build.gradle.kts package source -> jbh-notification (D6, leader)",
+      "module": "root",
+      "depends_on": [],
+      "parallel_ok": true,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    },
+    {
+      "id": "4.1",
+      "title": "Fix stale notifications line in .claude/CLAUDE.md (leader)",
+      "module": "root",
+      "depends_on": [],
+      "parallel_ok": true,
+      "status": "pending",
+      "agent": null,
+      "model": null,
+      "started_at": null,
+      "completed_at": null,
+      "duration_seconds": null,
+      "notes": null,
+      "budget": null
+    }
+  ],
+  "review": {
+    "status": "pending",
+    "agent": null,
+    "brief": null,
+    "rounds": []
+  },
+  "test_first": {
+    "status": "skipped",
+    "commit": null,
+    "tests": [],
+    "approved_at": null
+  },
+  "decisions": [
+    {
+      "id": "D1",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "Language source: controller reads Accept-Language and passes it down",
+      "why": "LocaleContextHolder gives the JVM default when the header is missing; RequestContextHolder ties domain to servlet",
+      "covered_by": null
+    },
+    {
+      "id": "D2",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "Best supported en/es match by q-value",
+      "why": "Rejected first-entry-only rule",
+      "covered_by": null
+    },
+    {
+      "id": "D3",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "SRP only: object InvitationLanguage, no interface",
+      "why": "DIP and OCP have no real need: one pure function, two fixed languages",
+      "covered_by": null
+    },
+    {
+      "id": "D4",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "No unit or integration tests; testFirst gate skipped",
+      "why": "System plan header 'Unit tests: excluded'; project CLAUDE.md forbids tests unless asked",
+      "covered_by": null
+    },
+    {
+      "id": "D5",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "Pipeline config block saved in AGENTS.md with detekt complexity check",
+      "why": "Repo had no block; detekt 1.23.8 installed",
+      "covered_by": null
+    },
+    {
+      "id": "D6",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "user",
+      "decision": "Design briefing approved",
+      "why": "User answered 'continue' at Step 3a",
+      "covered_by": null
+    },
+    {
+      "id": "D7",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "leader",
+      "decision": "Concurrency check (Step 3b): no race risk in tasks 1.1-4.1",
+      "why": "Pure function, header passed as parameter, no new writes or async; existing HTTP call inside @Transactional is unchanged",
+      "covered_by": null
+    },
+    {
+      "id": "D8",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "leader",
+      "decision": "Tasks 3.1 and 4.1 owned by the leader",
+      "why": "Root build file and .claude/CLAUDE.md are outside module jbh-iam-api; 4.1 file is untracked by git",
+      "covered_by": null
+    },
+    {
+      "id": "D9",
+      "at": "2026-11-14T02:00:40Z",
+      "scope": "change",
+      "made_by": "leader",
+      "decision": "Ticket JBH-74 used for naming only; Linear status not moved",
+      "why": "jbh-leader owns the ticket status (system plan Execution Rules)",
+      "covered_by": null
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-11-14T02:00:40Z",
+      "agent": "leader",
+      "event": "artifacts written by jbh-iam-api worker; openspec validate --strict passed; briefing approved; Step 5 on hold until jbh-leader sends 'go section 4'"
+    }
+  ]
+}
