@@ -31,7 +31,7 @@ class LogOutResource(
         log.info("Logging out user ${request.userPrincipal}")
 
         try {
-            val userId = authenticationOperationService.getUserIdFromJWT(authHeader)
+            val userId = authenticationOperationService.getUserIdFromJWT(authHeader.substringAfter("Bearer "))
             // Get and revoke refresh token
             val refreshToken = cookieService.getRefreshTokenFromCookie(request)
             if (refreshToken != null) {
