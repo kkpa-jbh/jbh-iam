@@ -37,7 +37,8 @@ class AuthFlowIntegrationTest {
     companion object {
         @Container
         @JvmField
-        val postgres = PostgreSQLContainer<Nothing>("postgres:16-alpine")
+        // The master changelog has a runningAs precondition: the DB user must be jbh_admin.
+        val postgres = PostgreSQLContainer<Nothing>("postgres:16-alpine").apply { withUsername("jbh_admin") }
 
         @JvmStatic
         @DynamicPropertySource
