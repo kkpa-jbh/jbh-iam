@@ -1,0 +1,30 @@
+# Complexity check for the kkpa-orchestrate-change pipeline (Complexity-Check in AGENTS.md).
+# Only two rules run: cyclomatic complexity above 10 and cognitive complexity above 15.
+# detekt reports a function when its value is >= threshold, so the thresholds are 11 and 16.
+config:
+  validation: false
+comments: { active: false }
+coroutines: { active: false }
+empty-blocks: { active: false }
+exceptions: { active: false }
+naming: { active: false }
+performance: { active: false }
+potential-bugs: { active: false }
+style: { active: false }
+complexity:
+  active: true
+  CyclomaticComplexMethod: { active: true, threshold: 11 }
+  CognitiveComplexMethod: { active: true, threshold: 16 }
+  ComplexCondition: { active: false }
+  ComplexInterface: { active: false }
+  LargeClass: { active: false }
+  LongMethod: { active: false }
+  LongParameterList: { active: false }
+  NestedBlockDepth: { active: false }
+  TooManyFunctions: { active: false }
+  NestedScopeFunctions: { active: false }
+  StringLiteralDuplication: { active: false }
+  MethodOverloading: { active: false }
+  NamedArguments: { active: false }
+  ReplaceSafeCallChainWithRun: { active: false }
+  LabeledExpression: { active: false }
