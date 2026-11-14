@@ -207,10 +207,23 @@
             "id": "R1",
             "severity": "minor",
             "note": "jbh-iam-api/src/main/kotlin/com/jbh/iam/domain/modules/usergroup/service/InvitationLanguage.kt:12-14: ranges with weight 0 (q=0, 'not acceptable') are not dropped, so 'fr, en;q=0' gives 'en'. Fix: add .filter { it.weight > 0.0 } before .map. Rare case, no data risk.",
-            "status": "open",
+            "status": "fixed",
             "triage": "accepted"
           }
         ]
+      },
+      {
+        "round": 2,
+        "at": "2026-11-14T23:40:00Z",
+        "verdict": "approved",
+        "security": {
+          "status": "skipped",
+          "ran_at": "2026-11-14T23:40:00Z",
+          "scope": "git.base",
+          "findings": [],
+          "note": "Skipped: user chose to skip /security-review (D15, scope review:security-gate); the new diff touches no sensitive path."
+        },
+        "findings": []
       }
     ]
   },
