@@ -22,7 +22,8 @@ class InvitationServiceImpl(
         groupId: UUID,
         request: InvitationRequest,
         invitedByUserId: UUID,
-        token: String
+        token: String,
+        acceptLanguage: String?
     ): UserGroupMembershipEntity {
         val invitationRequest = request.copy( teamID = groupId)
 
@@ -41,7 +42,7 @@ class InvitationServiceImpl(
         val membership =  membershipService.inviteUser(groupId, targetUserId, invitedByUserId)
 
 
-        notificationService.sendInvitationNotification(invitationRequest, targetUser, invitedByUser, token)
+        notificationService.sendInvitationNotification(invitationRequest, targetUser, invitedByUser, token, acceptLanguage)
         return membership
     }
 
@@ -49,7 +50,8 @@ class InvitationServiceImpl(
         groupId: UUID,
         request: InvitationRequest,
         invitedByUserId: UUID,
-        token: String
+        token: String,
+        acceptLanguage: String?
     ): UserGroupMembershipEntity {
         val invitationRequest = request.copy( teamID = groupId)
 
@@ -65,7 +67,7 @@ class InvitationServiceImpl(
         val invitedByUser = userService.findById(invitedByUserId)
 
         val membership = membershipService.validateReinvite(groupId, targetUserId, invitedByUserId)
-        notificationService.sendInvitationNotification(invitationRequest, targetUser, invitedByUser, token)
+        notificationService.sendInvitationNotification(invitationRequest, targetUser, invitedByUser, token, acceptLanguage)
         return membership
     }
 

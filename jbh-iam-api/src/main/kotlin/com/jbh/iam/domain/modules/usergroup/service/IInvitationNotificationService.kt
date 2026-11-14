@@ -6,5 +6,5 @@ import java.util.*
 
 interface IInvitationNotificationService {
     fun sendAcceptInvitationNotification(groupId: UUID, userId: UUID)
-    fun sendInvitationNotification(invitationRequest: InvitationRequest, targetUser: InternalUserDTO, invitedByUser: InternalUserDTO, token: String)
+    fun sendInvitationNotification(invitationRequest: InvitationRequest, targetUser: InternalUserDTO, invitedByUser: InternalUserDTO, token: String, acceptLanguage: String?)
 }

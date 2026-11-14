@@ -24,13 +24,15 @@ class InvitationNotificationServiceImpl(private val gatewayClientFactory: Gatewa
         invitationRequest: InvitationRequest,
         targetUser: InternalUserDTO,
         invitedByUser: InternalUserDTO,
-        token: String
+        token: String,
+        acceptLanguage: String?
     ) {
 
         val teamInvitationMetadata = TeamInvitationMetadata.builder()
             .teamId(invitationRequest.teamID)
             .teamName(invitationRequest.teamName)
             .inviterName(invitedByUser.email)
+            .locale(InvitationLanguage.fromAcceptLanguage(acceptLanguage))
             .build()
 
         val request = SendNotificationCommand.builder().recipientEmail(targetUser.email).recipientId(targetUser.id)

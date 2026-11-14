@@ -1,12 +1,12 @@
 ## 1. Language parser (module `jbh-iam-api`)
 
-- [ ] 1.1 Create `jbh-iam-api/src/main/kotlin/com/jbh/iam/domain/modules/usergroup/service/InvitationLanguage.kt`: `object InvitationLanguage` with `fun fromAcceptLanguage(header: String?): String?` (D2, D3). Depends on: none.
+- [x] 1.1 Create `jbh-iam-api/src/main/kotlin/com/jbh/iam/domain/modules/usergroup/service/InvitationLanguage.kt`: `object InvitationLanguage` with `fun fromAcceptLanguage(header: String?): String?` (D2, D3). Depends on: none.
 
 ## 2. Pass the header down (module `jbh-iam-api`)
 
-- [ ] 2.1 `IInvitationNotificationService.kt` and `InvitationNotificationServiceImpl.kt`: add last parameter `acceptLanguage: String?` to `sendInvitationNotification`; set `.locale(InvitationLanguage.fromAcceptLanguage(acceptLanguage))` on `TeamInvitationMetadata.builder()` (D1). Do not touch `sendAcceptInvitationNotification`. Depends on: 1.1.
-- [ ] 2.2 `IInvitationService.kt` and `InvitationServiceImpl.kt`: add last parameter `acceptLanguage: String?` to `inviteUserByEmailOrUsername` and `reinviteUserByEmailOrUsername`; pass it to `sendInvitationNotification` (D1). Depends on: 2.1.
-- [ ] 2.3 `UserGroupController.kt`: add `@RequestHeader("Accept-Language", required = false) acceptLanguage: String?` to `inviteUser` and `reinviteUser`; pass it to the service (D1). Depends on: 2.2.
+- [x] 2.1 `IInvitationNotificationService.kt` and `InvitationNotificationServiceImpl.kt`: add last parameter `acceptLanguage: String?` to `sendInvitationNotification`; set `.locale(InvitationLanguage.fromAcceptLanguage(acceptLanguage))` on `TeamInvitationMetadata.builder()` (D1). Do not touch `sendAcceptInvitationNotification`. Depends on: 1.1.
+- [x] 2.2 `IInvitationService.kt` and `InvitationServiceImpl.kt`: add last parameter `acceptLanguage: String?` to `inviteUserByEmailOrUsername` and `reinviteUserByEmailOrUsername`; pass it to `sendInvitationNotification` (D1). Depends on: 2.1.
+- [x] 2.3 `UserGroupController.kt`: add `@RequestHeader("Accept-Language", required = false) acceptLanguage: String?` to `inviteUser` and `reinviteUser`; pass it to the service (D1). Depends on: 2.2.
 
 ## 3. Package source (owner: leader)
 
