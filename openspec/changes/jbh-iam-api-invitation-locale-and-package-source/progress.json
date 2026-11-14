@@ -5,7 +5,7 @@
   "module": "jbh-iam-api",
   "roadmap": null,
   "request": "JBH-74 section 4: (a) build.gradle.kts, PACKAGES_READ_TOKEN block: change listOf(\"jbh-gateway-client\", \"jbh-personal-finance\") to listOf(\"jbh-gateway-client\", \"jbh-notification\") and update the comment. (b) InvitationNotificationServiceImpl.sendInvitationNotification: set .locale(...) on TeamInvitationMetadata.builder(), taken from the Accept-Language header of the inviter's HTTP request (language part only, es-CO -> es). Send it only when it is 'en' or 'es'; otherwise leave locale unset so the notification service uses its default. Check the value is available on the thread that runs the method.",
-  "status": "in-review",
+  "status": "reviewer-approved",
   "rollup": {
     "current": [],
     "pending": [],
