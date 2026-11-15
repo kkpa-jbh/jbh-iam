@@ -76,10 +76,11 @@ class UserGroupController(
     fun inviteUser(
         @PathVariable groupId: UUID,
         @Valid @RequestBody request: InvitationRequest,
-        @RequestHeader("Authorization") authHeader: String
+        @RequestHeader("Authorization") authHeader: String,
+        @RequestHeader("Accept-Language", required = false) acceptLanguage: String?
     ): ResponseEntity<InvitationResponse> {
         val invitation = invitationService.inviteUserByEmailOrUsername(
-            groupId, request, currentUserId(authHeader), authHeader
+            groupId, request, currentUserId(authHeader), authHeader, acceptLanguage
         )
         return ResponseEntity.status(HttpStatus.CREATED).body(invitation.toInvitationResponse())
     }
@@ -89,10 +90,11 @@ class UserGroupController(
     fun reinviteUser(
         @PathVariable groupId: UUID,
         @Valid @RequestBody request: InvitationRequest,
-        @RequestHeader("Authorization") authHeader: String
+        @RequestHeader("Authorization") authHeader: String,
+        @RequestHeader("Accept-Language", required = false) acceptLanguage: String?
     ): ResponseEntity<InvitationResponse> {
         val invitation = invitationService.reinviteUserByEmailOrUsername(
-            groupId, request, currentUserId(authHeader), authHeader
+            groupId, request, currentUserId(authHeader), authHeader, acceptLanguage
         )
         return ResponseEntity.ok(invitation.toInvitationResponse())
     }

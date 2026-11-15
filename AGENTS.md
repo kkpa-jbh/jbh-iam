@@ -95,3 +95,11 @@ Report only problems that should block a merge.
 - No direct URL to another service. Use `jbh-gateway-client`.
 - Port `9999`, Consul name `jbh-iam-service`, and database `jbh` are used by other repos.
   A change needs an update of the system map in `jbh-deploy`.
+
+## Pipeline config (kkpa-orchestrate-change)
+
+- **Modules-Root:** `.` (the modules are the `jbh-iam-*` folders)
+- **Doc-Pack:** `AGENTS.md`, `.claude/CLAUDE.md`
+- **Complexity-Check:** `detekt --input . --excludes '**/build/**,**/test/**' --config config/detekt/complexity.yml`
+- **Design-Gates:** `database`
+- **Git-Strategy:** `auto`

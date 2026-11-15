@@ -21,10 +21,12 @@ allprojects {
         mavenLocal()
         mavenCentral()
         // CI only: jbh-gateway-client and jbh-notification-contracts come from GitHub Packages.
+        // jbh-gateway-client is published by the jbh-gateway-client repo. The notification contracts
+        // (and their parent pom) are published by the jbh-notification repo.
         // They belong to other repos, so GITHUB_TOKEN cannot read them: CI passes a classic PAT
         // with read:packages (repo secret PACKAGES_READ_TOKEN). Local builds use ~/.m2 instead.
         System.getenv("PACKAGES_READ_TOKEN")?.let { token ->
-            listOf("jbh-gateway-client", "jbh-personal-finance").forEach { repo ->
+            listOf("jbh-gateway-client", "jbh-notification").forEach { repo ->
                 maven {
                     url = uri("https://maven.pkg.github.com/kkpa-jbh/$repo")
                     credentials {
