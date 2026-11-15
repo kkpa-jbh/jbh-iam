@@ -2,6 +2,7 @@ package com.jbh.iam.gateway
 
 import com.jbh.gateway.client.JbhGatewayClientBuilder
 import io.micrometer.core.instrument.MeterRegistry
+import io.opentelemetry.api.OpenTelemetry
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -12,6 +13,8 @@ class GatewayClientBuilder(
     private val configProvider: JbhGatewayClientConfigProvider,
     // Receives the circuit breaker metrics of the gateway client (/actuator/prometheus).
     private val meterRegistry: MeterRegistry,
+    // Makes sendNotification continue the current trace (W3C traceparent) instead of using the global one.
+    private val openTelemetry: OpenTelemetry,
 ) {
     fun buildGatewayClient(): JbhGatewayClientBuilder {
         log.info("Building Gateway Client with base URL {}", configProvider.baseUrl())
@@ -19,6 +22,7 @@ class GatewayClientBuilder(
             .baseUrl(configProvider.baseUrl())
             .sourceService(ACCOUNT_SERVICE_CLIENT)
             .meterRegistry(meterRegistry)
+            .openTelemetry(openTelemetry)
             .build()
     }
 
