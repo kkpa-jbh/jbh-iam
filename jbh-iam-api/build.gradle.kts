@@ -35,6 +35,12 @@ dependencies {
     // Metrics at /actuator/prometheus (version from the Spring Boot BOM)
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
+    // Tracing and OTLP export (versions from the Spring Boot BOM)
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    // Logs to OTLP. The BOM does not manage it: 2.15.0-alpha is built for OpenTelemetry SDK 1.49.0,
+    // the version of Spring Boot 3.5.16. Do not move it alone.
+    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.15.0-alpha")
 
     // Service discovery
     implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
